@@ -19,6 +19,9 @@
 ; mark always active for selecting
 (setq transient-mark-mode t)
 
+; Annoying cursor blinking
+(blink-cursor-mode 0)
+
 ; prevent dabbrev from replacing case
 (setq dabbrev-case-replace nil)
 
@@ -54,7 +57,7 @@
 ; yes/no turns to y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
-; don't ask about running (add-hook 'after-init-hook 
+; don't ask about running (add-hook 'after-init-hook)
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
   (flet ((process-list ())) ad-do-it))
@@ -68,3 +71,27 @@
 ;; Scroll one line at a time without recentering the screen
 (setq scroll-step 1
       scroll-conservatively 10000)
+
+(setq compilation-ask-about-save nil)
+
+;; Don't warn on some functions
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'ido-exit-minibuffer 'disabled nil)
+
+;; Encoding
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+
+;; Avoid deleting the other windows in ESC-ESC-ESC
+(defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
+  (let (orig-one-window-p)
+    (fset 'orig-one-window-p (symbol-function 'one-window-p))
+    (fset 'one-window-p (lambda (&optional nomini all-frames) t))
+    (unwind-protect
+        ad-do-it
+      (fset 'one-window-p (symbol-function 'orig-one-window-p)))))
+

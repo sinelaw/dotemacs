@@ -3,6 +3,10 @@
 (setq make-backup-files nil)
 
 ; recentf - save history of recently visited files
+(autoload 'recentf-mode "recentf.el" nil t)
+(autoload 'recentf-save-list "recentf.el" nil t)
+
+; recentf - save history of recently visited files
 (require 'recentf)
 (run-with-idle-timer (* 5 60) t 'recentf-save-list)
 (setq recentf-auto-cleanup 'never)

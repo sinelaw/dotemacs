@@ -38,12 +38,10 @@
 
 (add-to-list 'custom-theme-load-path (in-emacs-d "themes"))
 
-(setq-default cursor-type 'bar)
-
-(require 'sublimity-scroll)
-(sublimity-mode 1)
-(setq sublimity-scroll-weight 10
-      sublimity-scroll-drift-length 5)
-
-(require 'popwin)
-(popwin-mode 1)
+; (setq-default cursor-type 'bar)
+; (require 'sublimity-scroll)
+; (sublimity-mode 1)
+; (setq sublimity-scroll-weight 10
+;       sublimity-scroll-drift-length 5)
+; (require 'popwin)
+; (popwin-mode 1)

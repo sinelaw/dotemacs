@@ -6,8 +6,8 @@
 (global-set-key [(home)]                 'beginning-of-line)
 
 ;; Page Up/Down half screen scroll
-(global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
-(global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
+(global-set-key (kbd "<prior>") 'scroll-down-command)
+(global-set-key (kbd "<next>") 'scroll-up-command)
 
 ;; F keys
 (eval-after-load "c-mode" '(define-key c-mode-map [(f6)] 'ff-find-other-file))
@@ -15,12 +15,12 @@
 (global-set-key [(f9)] 'projectile-compile-project)
 (global-set-key [(f10)] 'previous-error)
 (global-set-key [(f11)] 'next-error)
-;; deleting trailing whitespaces
-(global-set-key [(f12)] 'delete-trailing-whitespace)
 
+;; deleting trailing whitespaces
+;; (global-set-key [(f12)] 'delete-trailing-whitespace)
 
 ;; Open shell with C-z
-(global-set-key (kbd "C-z") 'shell)
+;; (global-set-key (kbd "C-z") 'shell)
 
 ;; Browse URLs with C-x /
 (global-set-key (kbd "C-x /") 'browse-url)
@@ -41,8 +41,8 @@
 (global-set-key (kbd "<M-left>") 'windmove-left)
 
 ;; zooming
-(global-set-key (kbd "C-}") 'text-scale-increase)
-(global-set-key (kbd "C-{") 'text-scale-decrease)
+;(global-set-key (kbd "C-}") 'text-scale-increase)
+;(global-set-key (kbd "C-{") 'text-scale-decrease)
 
 ;; commenting/uncommenting
 (defun my/comment-or-uncomment-current-line ()
@@ -86,3 +86,61 @@
 
 ;; Goto function definitions
 (global-set-key (kbd "C-h C-f") 'find-function)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dan's additions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(global-set-key (kbd "C-}") (lambda () (interactive) (enlarge-window-horizontally 3)))
+(global-set-key (kbd "C-{") (lambda () (interactive) (shrink-window-horizontally 3)))
+(global-set-key (kbd "C-\"") (lambda () (interactive) (enlarge-window 3)))
+(global-set-key (kbd "C-|") (lambda () (interactive) (shrink-window 3)))
+(global-set-key (kbd "C-;") (lambda () (interactive) (dax-set-default-face-height 150)))
+(global-set-key (kbd "C-:") (lambda () (interactive) (dax-set-default-face-height 105)))
+
+(global-set-key (kbd "C-v") 'yank)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+(global-set-key (kbd "C-x <up>") 'buf-move-up)
+(global-set-key (kbd "C-x <down>") 'buf-move-down)
+(global-set-key (kbd "C-x <right>") 'buf-move-right)
+(global-set-key (kbd "C-x <left>") 'buf-move-left)
+
+;; (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+(global-set-key (kbd "C-x C-r") 'recentf-open-files)
+
+(global-set-key [(control b)] 'switch-to-buffer)
+(global-set-key [(control c) (m)] 'mc/edit-lines)
+(global-set-key [(control l)] 'find-file)
+(global-set-key [(control meta g)] 'dax-kill-current-buffer)
+(global-set-key [(meta g)] 'goto-line)
+(global-set-key [(control tab)] 'other-window)
+(global-set-key [(control z)] 'undo)
+
+(global-set-key [(f7)] 'magit-status)
+(global-set-key [(control x) (f7)] 'magit-branch-manager)
+
+(global-set-key [(control f1)] 'ibuffer)
+(global-set-key [(shift control f1)] 'recentf-open-files)
+
+(global-set-key [(control f2)] 'dired-jump)
+
+(global-set-key [(control f3)] 'dax-spawn-dup-in-current-dir)
+(global-set-key [(control shift f3)] 'vc-print-root-log)
+
+(global-set-key [f4] 'next-error)
+(global-set-key [(meta f4)] 'flymake-goto-next-error)
+(global-set-key [(ctrl f4)] 'flymake-display-err-menu-for-current-line)
+
+(global-set-key [(control f5)] 'ff-find-other-file)
+(global-set-key [f5] 'switch-to-prev-buffer)
+
+(global-set-key [(control f6)] 'dax-switch-prev-buffer)
+(global-set-key [f6] 'switch-to-next-buffer)
+
+(global-set-key [(f9)] 'compile)
+(global-set-key [(meta f9)] 'recompile)
+(global-set-key [(control f9)] 'grep)
+
+(global-set-key [f11] 'delete-window)
+(global-set-key [f12] 'call-last-kbd-macro)

@@ -84,9 +84,13 @@
 (defun load-part (part-name)
   (load-file (concat parts-dir "/" part-name))
   )
+
+(setq init-parts-blacklist ())
+
 (defun load-part-if-not-hidden (part-name)
-  (if (not (elisp-utils/starts-with part-name "."))
-      (load-part part-name)))
+  (if (not (elisp-utils/one-ends-with part-name init-parts-blacklist))
+      (if (not (elisp-utils/starts-with part-name "."))
+          (load-part part-name))))
 
 (defun autoload-and-run (symbol file interactive callback)
   (autoload symbol file nil interactive)

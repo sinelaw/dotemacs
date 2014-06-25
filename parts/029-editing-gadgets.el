@@ -46,6 +46,9 @@
 (setq drag-stuff-modifier '(super control))
 (drag-stuff-global-mode t)
 
+(global-set-key [(meta mouse-4)] 'drag-stuff-up)
+(global-set-key [(meta mouse-5)] 'drag-stuff-down)
+
 ; expand-region
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -82,13 +85,13 @@
       (concat "dash://" (current-word)))))
 
 ; flycheck
-(require 'flycheck)
+; (require 'flycheck)
 
 ; turn on flycheck-mode in python-mode
-(add-hook 'python-mode-hook
-          '(lambda ()
-             (flycheck-mode)))
-(global-set-key (kbd "C-c m f") 'flycheck-mode)
+;(add-hook 'python-mode-hook
+;          '(lambda ()
+;             (flycheck-mode)))
+; (global-set-key (kbd "C-c m f") 'flycheck-mode)
 (global-set-key (kbd "C-c f r")
                 '(lambda ()
                    (interactive)
