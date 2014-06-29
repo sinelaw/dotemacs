@@ -16,3 +16,11 @@
     "-dired.el"
     "-helm.el"
     ))
+
+;; Based on stuff from github.com/Fuuzetsu/.emacs.d
+
+;; shorthand for interactive lambdas
+(defmacro λ (&rest body)
+  `(lambda ()
+     (interactive)
+     ,@body))

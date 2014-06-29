@@ -26,7 +26,7 @@
     (setq temp-source-file-name
 	  (flymake-init-create-temp-buffer-copy create-temp-f)
           args (flymake-get-syntax-check-program-args
-                temp-source-file-name *haxe-project-root*
+                temp-source-file-name "."
                 use-relative-base-dir use-relative-source
                 get-cmdline-f))
     args))

@@ -220,3 +220,123 @@ With numeric prefix arg DEC, decrement the integer by DEC amount."
 
 (global-set-key (kbd "M-=") 'increment-integer-at-point)
 (global-set-key (kbd "M--") 'decrement-integer-at-point)
+
+;; Based on stuff from github.com/Fuuzetsu/.emacs.d
+
+(defun my/open-line-below ()
+  (interactive)
+  (end-of-line)
+  (newline)
+  (indent-for-tab-command))
+
+(defun my/open-line-above ()
+  (interactive)
+  (beginning-of-line)
+  (newline)
+  (forward-line -1)
+  (indent-for-tab-command))
+
+(defun my/new-line-in-between ()
+  (interactive)
+  (newline)
+  (save-excursion
+    (newline)
+    (indent-for-tab-command))
+  (indent-for-tab-command))
+
+(defun my/new-line-dwim ()
+  (interactive)
+  (let ((break-open-pair (or (and (looking-back "{") (looking-at "}"))
+                             (and (looking-back ">") (looking-at "<"))
+                             (and (looking-back "\\[") (looking-at "\\]")))))
+    (newline)
+    (when break-open-pair
+      (save-excursion
+        (newline)
+        (indent-for-tab-command)))
+    (indent-for-tab-command)))
+
+(defun my/duplicate-region (&optional num start end)
+  "My/Duplicates the region bounded by START and END NUM times.
+If no START and END is provided, the current region-beginning and
+region-end is used."
+  (interactive "p")
+  (save-excursion
+   (let* ((start (or start (region-beginning)))
+          (end (or end (region-end)))
+          (region (buffer-substring start end)))
+     (goto-char end)
+     (dotimes (i num)
+       (insert region)))))
+
+(defun my/duplicate-current-line (&optional num)
+  "Duplicate the current line NUM times."
+  (interactive "p")
+  (save-excursion
+   (when (eq (point-at-eol) (point-max))
+     (goto-char (point-max))
+     (newline)
+     (forward-char -1))
+   (my/duplicate-region num (point-at-bol) (1+ (point-at-eol)))))
+
+(defun my/one-shot-keybinding (key command)
+  (set-temporary-overlay-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map (kbd key) command)
+     map) t))
+
+(defun my/duplicate-current-line-or-region (arg)
+  "Duplicates the current line or region ARG times.
+If there's no region, the current line will be duplicated."
+  (interactive "p")
+  (if (region-active-p)
+      (let ((beg (region-beginning))
+            (end (region-end)))
+        (my/duplicate-region arg beg end)
+        (my/one-shot-keybinding "d" (λ (my/duplicate-region 1 beg end))))
+    (my/duplicate-current-line arg)
+    (my/one-shot-keybinding "d" 'my/duplicate-current-line)))
+
+(defun my/current-quotes-char ()
+  (nth 3 (syntax-ppss)))
+
+(defalias 'my/point-is-in-string-p 'my/current-quotes-char)
+
+(defun my/move-point-forward-out-of-string ()
+  (while (my/point-is-in-string-p) (forward-char)))
+
+(defun my/move-point-backward-out-of-string ()
+  (while (my/point-is-in-string-p) (backward-char)))
+
+(defun my/move-forward-out-of-param ()
+  (while (not (looking-at ")\\|, \\| ?}\\| ?\\]"))
+    (cond
+     ((my/point-is-in-string-p) (mymove-point-forward-out-of-string))
+     ((looking-at "(\\|{\\|\\[") (forward-list))
+     (t (forward-char)))))
+
+(defun my/move-backward-out-of-param ()
+  (while (not (looking-back "(\\|, \\|{ ?\\|\\[ ?"))
+    (cond
+     ((my/point-is-in-string-p) (mymove-point-backward-out-of-string))
+     ((looking-back ")\\|}\\|\\]") (backward-list))
+     (t (backward-char)))))
+
+(defun my/transpose-params ()
+  "Presumes that params are in the form (p, p, p) or {p, p, p} or [p, p, p]"
+  (interactive)
+  (let* ((end-of-first (cond
+                        ((looking-at ", ") (point))
+                        ((and (looking-back ",") (looking-at " ")) (- (point) 1))
+                        ((looking-back ", ") (- (point) 2))
+                        (t (error "Place point between params to transpose."))))
+         (start-of-first (save-excursion
+                           (goto-char end-of-first)
+                           (my/move-backward-out-of-param)
+                           (point)))
+         (start-of-last (+ end-of-first 2))
+         (end-of-last (save-excursion
+                        (goto-char start-of-last)
+                        (my/move-forward-out-of-param)
+                        (point))))
+    (transpose-regions start-of-first end-of-first start-of-last end-of-last)))

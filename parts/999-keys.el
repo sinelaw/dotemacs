@@ -95,8 +95,8 @@
 (global-set-key (kbd "C-{") (lambda () (interactive) (shrink-window-horizontally 3)))
 (global-set-key (kbd "C-\"") (lambda () (interactive) (enlarge-window 3)))
 (global-set-key (kbd "C-|") (lambda () (interactive) (shrink-window 3)))
-(global-set-key (kbd "C-;") (lambda () (interactive) (dax-set-default-face-height 150)))
-(global-set-key (kbd "C-:") (lambda () (interactive) (dax-set-default-face-height 105)))
+(global-set-key (kbd "C-;") (lambda () (interactive) (my/set-default-face-height 150)))
+(global-set-key (kbd "C-:") (lambda () (interactive) (my/set-default-face-height 105)))
 
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -112,7 +112,7 @@
 (global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control c) (m)] 'mc/edit-lines)
 (global-set-key [(control l)] 'find-file)
-(global-set-key [(control meta g)] 'dax-kill-current-buffer)
+(global-set-key [(control meta g)] 'my/kill-current-buffer)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [(control tab)] 'other-window)
 (global-set-key [(control z)] 'undo)
@@ -125,7 +125,7 @@
 
 (global-set-key [(control f2)] 'dired-jump)
 
-(global-set-key [(control f3)] 'dax-spawn-dup-in-current-dir)
+(global-set-key [(control f3)] 'my/spawn-dup-in-current-dir)
 (global-set-key [(control shift f3)] 'vc-print-root-log)
 
 (global-set-key [f4] 'next-error)
@@ -135,7 +135,7 @@
 (global-set-key [(control f5)] 'ff-find-other-file)
 (global-set-key [f5] 'switch-to-prev-buffer)
 
-(global-set-key [(control f6)] 'dax-switch-prev-buffer)
+(global-set-key [(control f6)] 'my/switch-prev-buffer)
 (global-set-key [f6] 'switch-to-next-buffer)
 
 (global-set-key [(f9)] 'compile)

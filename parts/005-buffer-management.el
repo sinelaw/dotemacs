@@ -75,11 +75,43 @@ Including indent-buffer, which should not be called automatically on save."
 (global-set-key (kbd "M-h") 'iflipb-next-buffer)
 (global-set-key (kbd "M-H") 'iflipb-previous-buffer)
 
-(defun dax-kill-current-buffer ()
+(defun my/kill-current-buffer ()
   (interactive)
   (kill-buffer (current-buffer)))
 
-(defun dax-switch-prev-buffer ()
+(defun my/switch-prev-buffer ()
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
+;; Based on stuff from github.com/Fuuzetsu/.emacs.d
+
+(defun my/buffer-local-set-key (key action)
+  (when buffer-local-mode
+    (define-key (mode-keymap buffer-local-mode)
+      key action)
+    (return-from set-key-buffer-local))
+  (let* ((mode-name-loc (gensym "-blm")))
+    (eval `(define-minor-mode ,mode-name-loc nil nil nil (make-sparse-keymap)))
+    (setq buffer-local-mode mode-name-loc)
+    (funcall mode-name-loc 1)
+    (define-key (mode-keymap mode-name-loc) key action)))
+
+(defun my/create-scratch-buffer nil
+  "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
+  (interactive)
+  (let ((n 0)
+        bufname)
+    (while (progn
+             (setq bufname (concat "*scratch"
+                                   (if (= n 0) "" (int-to-string n))
+                                   "*"))
+             (setq n (1+ n))
+             (get-buffer bufname)))
+    (switch-to-buffer (get-buffer-create bufname))
+    (emacs-lisp-mode)
+    ))
+
+(defun my/split-window-right-and-move-there-dammit ()
+  (interactive)
+  (split-window-right)
+  (windmove-right))

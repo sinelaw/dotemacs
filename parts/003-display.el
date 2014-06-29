@@ -20,7 +20,7 @@
 (setq show-paren-delay 0)
 (show-paren-mode)
 
-; winner mode
+; winner mode - Undo/redo window configuration with C-c <left>/<right>
 (winner-mode 1)
 
 ; guid-key
