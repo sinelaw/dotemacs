@@ -26,6 +26,23 @@
   (color-theme-initialize)
   (color-theme-dark-laptop)))
 
+(require 'flycheck)
+
+(flycheck-define-checker my/flymake-compatible-checker
+    "A syntax checker using make."
+    :command ("flymake-compat" source-inplace)
+    :error-patterns
+    ((info line-start (file-name) ":" line ":" column
+           ": note: " (message) line-end)
+     (warning line-start (file-name) ":" line ":" column
+              ": warning: " (message) line-end)
+     (error line-start (file-name) ":" line ":" column
+            ": " (or "fatal error" "error") ": " (message) line-end))
+    :modes (c-mode c++-mode))
+
+(set-face-attribute 'flycheck-error nil :background "#990000")
+(set-face-attribute 'flycheck-warning nil :background "#505000")
+
 ; Emacs 24 bugfix for face value after new-frame
 (defun my-after-make-frame-hook (&rest frame)
   (if window-system

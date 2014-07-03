@@ -20,6 +20,9 @@
   uniquify-buffer-name-style 'post-forward
   uniquify-separator ":")
 
+; highlight-symbol
+(require 'highlight-symbol)
+
 ; auto-complete
 (require 'auto-complete)
 (require 'auto-complete-config)

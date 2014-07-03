@@ -4,6 +4,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(doc-view-resolution 200)
+ '(flycheck-highlighting-mode (quote sexps))
  '(ibuffer-default-sorting-mode (quote filename/process))
  '(safe-local-variable-values (quote ((ff-search-directories "../include" ".") (ff-search-directories "../../include") (ff-search-directories "include"))))
  '(whitespace-display-mappings nil)
@@ -14,10 +15,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#000000" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 105 :width normal :foundry "misc" :family "fixed"))))
- '(col-highlight ((t (:background "#444466"))))
+ '(col-highlight ((t (:background "#444466"))) t)
  '(cursor ((t (:background "#00ff00"))))
  '(diff-hl-insert ((t (:background "#77bb77" :foreground "#33bb33"))))
  '(egoge-display-time ((t (:foreground "#ccffff"))))
+ '(flycheck-error-face ((t (:background "#990000"))) t)
+ '(flycheck-warning-face ((t (:background "#505000"))) t)
  '(flymake-errline ((t (:background "#990000"))))
  '(flymake-warnline ((t (:background "#505000"))))
  '(font-lock-builtin-face ((((class color) (background dark)) (:foreground "Turquoise"))))
@@ -34,7 +37,7 @@
  '(font-lock-warning-face ((((class color) (background dark)) (:foreground "yellow" :background "red"))))
  '(ghc-face-error ((t (:background "#990000"))))
  '(ghc-face-warn ((t (:background "#505000"))))
- '(hl-line ((t (:inherit col-highlight :background "green4"))))
+ '(hl-line ((t (:inherit col-highlight :background "green4"))) t)
  '(linum ((t (:inherit (shadow default) :background "#2a2a2a" :foreground "#778888"))) t)
  '(whitespace-indentation ((t (:background "#202020"))) t)
  '(whitespace-space ((t (:background "#181818"))) t)

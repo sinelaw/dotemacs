@@ -109,6 +109,8 @@
 ;; (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
 (global-set-key (kbd "C-x C-r") 'recentf-open-files)
 
+(global-set-key (kbd "M-^") 'highlight-symbol-query-replace)
+
 (global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control c) (m)] 'mc/edit-lines)
 (global-set-key [(control l)] 'find-file)
