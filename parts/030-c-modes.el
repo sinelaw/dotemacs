@@ -125,3 +125,5 @@ With prefix arg, forces opening brace to be in a new line"
         ))
   )
 )
+
+(require 'c-comment-edit)

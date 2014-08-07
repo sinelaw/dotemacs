@@ -111,7 +111,7 @@
 
 (global-set-key (kbd "M-^") 'highlight-symbol-query-replace)
 
-(global-set-key [(control b)] 'switch-to-buffer)
+1(global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control c) (m)] 'mc/edit-lines)
 (global-set-key [(control l)] 'find-file)
 (global-set-key [(control meta g)] 'my/kill-current-buffer)

@@ -30,5 +30,6 @@
 (setq mc/cmds-to-run-once
       '(
         ace-jump-move
+        c-electric-paren
         my/mark-all-like-this-in-defun
         ))

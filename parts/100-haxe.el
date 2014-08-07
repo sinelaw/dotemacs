@@ -40,6 +40,7 @@
 (defun my-haxe-mode-hook ()
   (haxe-flymake-install)
   (flymake-mode)
+  (setq indent-tabs-mode nil)
   (local-set-key [return] 'newline-and-indent))
 
 (add-hook 'haxe-mode-hook 'my-haxe-mode-hook)

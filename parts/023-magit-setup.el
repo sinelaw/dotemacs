@@ -35,3 +35,16 @@
 (global-set-key [(control x) (f7)] 'magit-branch-manager)
 
 (add-hook 'magit-mode-hook 'magit-load-config-extensions)
+
+;; Use 'C-c v' to review the commit for the currently edited commit message
+
+(defun my/magit-show-diff-current-head ()
+  (interactive)
+  (magit-diff "HEAD~1" "HEAD")
+)
+
+(defun my/git-commit-mode-hook ()
+  (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
+)
+
+(add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
