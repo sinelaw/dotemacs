@@ -17,4 +17,5 @@
 (defun emacsclient-post-frame-fixups ()
   (my-after-make-frame-hook (selected-frame))
   (load-file custom-file)
+  (my/reset-default-face-font-height)
 )

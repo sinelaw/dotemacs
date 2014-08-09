@@ -82,6 +82,22 @@
       (kill-ring-save (region-beginning) (region-end))
     (kill-ring-save (line-beginning-position) (line-end-position))))
 
+(setq my/toggle-default-face-font-height-large nil)
+
+(defun my/reset-default-face-font-height ()
+  (interactive)
+  (if (eq my/toggle-default-face-font-height-large nil)
+      (my/set-default-face-height 150)
+      (my/set-default-face-height 105)
+    )
+  )
+
+(defun my/toggle-default-face-font-height ()
+  (interactive)
+  (setq my/toggle-default-face-font-height-large (not my/toggle-default-face-font-height-large))
+  (my/reset-default-face-font-height)
+  )
+
 (global-set-key (kbd "M-w") 'save-line-or-region)
 
 ;; Goto function definitions
@@ -95,8 +111,7 @@
 (global-set-key (kbd "C-{") (lambda () (interactive) (shrink-window-horizontally 3)))
 (global-set-key (kbd "C-\"") (lambda () (interactive) (enlarge-window 3)))
 (global-set-key (kbd "C-|") (lambda () (interactive) (shrink-window 3)))
-(global-set-key (kbd "C-;") (lambda () (interactive) (my/set-default-face-height 150)))
-(global-set-key (kbd "C-:") (lambda () (interactive) (my/set-default-face-height 105)))
+(global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
 
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -111,7 +126,7 @@
 
 (global-set-key (kbd "M-^") 'highlight-symbol-query-replace)
 
-1(global-set-key [(control b)] 'switch-to-buffer)
+(global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control c) (m)] 'mc/edit-lines)
 (global-set-key [(control l)] 'find-file)
 (global-set-key [(control meta g)] 'my/kill-current-buffer)
