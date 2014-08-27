@@ -5,6 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(doc-view-resolution 200)
  '(flycheck-highlighting-mode (quote sexps))
+ '(git-grep-switches "--extended-regexp -I --no-color -n")
  '(ibuffer-default-sorting-mode (quote filename/process))
  '(safe-local-variable-values (quote ((ff-search-directories "../include" ".") (ff-search-directories "../../include") (ff-search-directories "include"))))
  '(whitespace-display-mappings nil)
@@ -38,7 +39,7 @@
  '(ghc-face-error ((t (:background "#990000"))))
  '(ghc-face-warn ((t (:background "#505000"))))
  '(hl-line ((t (:inherit col-highlight :background "green4"))) t)
- '(linum ((t (:inherit (shadow default) :background "#2a2a2a" :foreground "#778888"))) t)
+ '(linum ((t (:inherit (shadow default) :background "#2a2a2a" :foreground "#778888"))))
  '(whitespace-indentation ((t (:background "#202020"))) t)
  '(whitespace-space ((t (:background "#181818"))) t)
  '(whitespace-space-after-tab ((t (:background "#333333" :foreground "firebrick"))) t))

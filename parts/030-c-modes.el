@@ -126,4 +126,47 @@ With prefix arg, forces opening brace to be in a new line"
   )
 )
 
+(defun c-prototype-comment ()
+  "---"
+  (interactive)
+  (let (orig pt funcname end params i)
+    (setq orig (point))
+    (setq params '())
+    (search-forward "(")
+    (setq pt (point))
+    (save-excursion
+      (search-backward " ")
+      (setq funcname (buffer-substring-no-properties (+ (point) 1) (- pt 1))))
+    (save-excursion
+      (search-forward ")")
+      (setq end (point)))
+    (beginning-of-line)
+    (save-excursion
+      (catch 'foo
+        (while (< (point) end)
+          (if (not (search-forward "," end t))
+              (if (not (search-forward ")" end t))
+                  (throw 'foo t)))
+          (save-excursion
+            (backward-char)
+            (let ((start (point)))
+              (search-backward-regexp "[^a-zA-Z0-9_]")
+              (forward-char)
+              (push (buffer-substring-no-properties (point) start) params)
+              )
+            ))))
+    (insert "\n")
+    (insert "/**\n")
+    (insert " * " funcname "()\n")
+    (insert " *\n")
+    (dolist (i (reverse params))
+      (insert " * @param " i "\n"))
+    (insert " *\n")
+    (insert " * \n")
+    (insert " *\n")
+    (insert " * @returns\n")
+    (insert " */\n")
+  )
+)
+
 (require 'c-comment-edit)

@@ -156,8 +156,10 @@
 (global-set-key [f6] 'switch-to-next-buffer)
 
 (global-set-key [(f9)] 'compile)
+
 (global-set-key [(meta f9)] 'recompile)
-(global-set-key [(control f9)] 'grep)
+(global-set-key [(control f9)] 'git-grep)
+(global-set-key [(shift control f9)] 'grep)
 
 (global-set-key [f11] 'delete-window)
 (global-set-key [f12] 'call-last-kbd-macro)

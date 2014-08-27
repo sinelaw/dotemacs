@@ -115,3 +115,37 @@
        (replace-regexp (nth 0 sp) (nth 1 sp)))
   )
 )
+
+(defcustom git-grep-switches "--extended-regexp -I --no-color -n"
+  "Switches to pass to `git grep'."
+  :type 'string)
+
+(defun git-grep (command-args)
+  ;; Read command-args
+  (interactive
+   (let ((root (vc-git-root default-directory)))
+     (if root
+       (list
+          (read-shell-command
+           "Run git-grep (like this): "
+           (format (concat
+                    "cd %s && "
+                    "TERM=xterm git grep %s -e %s")
+                   root
+                   git-grep-switches
+                   (let ((thing (and
+                                 buffer-file-name
+                                 (thing-at-point 'symbol))))
+                     (or (and thing (progn
+                                      (set-text-properties 0 (length thing) nil thing)
+                                      (shell-quote-argument (regexp-quote thing))))
+                         "")))
+           'git-grep-history))
+       (list))))
+
+   ;; Do the actual work
+   (if command-args
+     (let ((grep-use-null-device nil))
+       (grep command-args))
+     (message "Not a git tree"))
+  )
