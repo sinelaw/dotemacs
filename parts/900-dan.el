@@ -32,13 +32,22 @@
     "A syntax checker using make."
     :command ("flymake-compat" source-inplace)
     :error-patterns
-    ((info line-start (file-name) ":" line ":" column
-           ": note: " (message) line-end)
-     (warning line-start (file-name) ":" line ":" column
-              ": warning: " (message) line-end)
-     (error line-start (file-name) ":" line ":" column
-            ": " (or "fatal error" "error") ": " (message) line-end))
-    :modes (c-mode c++-mode))
+    ((error line-start
+           (message "In file included from") " " (file-name) ":" line ":"
+           line-end)
+    (info line-start (file-name) ":" line ":" column
+          ": note: " (message) line-end)
+    (warning line-start (file-name) ":" line ":" column
+          ": warning: " (message) line-end)
+    (error line-start (file-name) ":" line ":" column
+          ": " (or "fatal error" "error") ": " (message) line-end))
+   :error-filter
+   (lambda (errors)
+     (flycheck-fold-include-errors
+      (flycheck-sanitize-errors errors) "In file included from"))
+   :modes (c-mode c++-mode))
+
+(global-flycheck-mode)
 
 (set-face-attribute 'flycheck-error nil :background "#990000")
 (set-face-attribute 'flycheck-warning nil :background "#505000")

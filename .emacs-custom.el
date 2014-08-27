@@ -5,8 +5,13 @@
  ;; If there is more than one, they won't work right.
  '(doc-view-resolution 200)
  '(flycheck-highlighting-mode (quote sexps))
+ '(flycheck-checkers (quote (asciidoc my/flymake-compatible-checker cfengine chef-foodcritic coffee coffee-coffeelint css-csslint d-dmd elixir emacs-lisp emacs-lisp-checkdoc erlang eruby-erubis go-gofmt go-golint go-vet go-build go-test haml handlebars haskell-ghc haskell-hlint html-tidy javascript-jshint javascript-eslint javascript-gjslint json-jsonlint less lua make perl perl-perlcritic php php-phpmd php-phpcs puppet-parser puppet-lint python-flake8 python-pylint racket rst rst-sphinx ruby-rubocop ruby-rubylint ruby ruby-jruby rust sass scala scss sh-bash sh-posix-dash sh-posix-bash sh-zsh sh-shellcheck slim tex-chktex tex-lacheck texinfo verilog-verilator xml-xmlstarlet xml-xmllint yaml-jsyaml yaml-ruby)))
+ '(flycheck-disabled-checkers (quote (c/c++-cppcheck c/c++-gcc c/c++-clang)))
+ '(flycheck-display-errors-delay 0)
+ '(flycheck-display-errors-function (quote flycheck-display-error-messages))
  '(git-grep-switches "--extended-regexp -I --no-color -n")
  '(ibuffer-default-sorting-mode (quote filename/process))
+ '(linum-format "%4d")
  '(safe-local-variable-values (quote ((ff-search-directories "../include" ".") (ff-search-directories "../../include") (ff-search-directories "include"))))
  '(whitespace-display-mappings nil)
  '(whitespace-style (quote (face tabs spaces trailing space-before-tab newline indentation empty space-after-tab space-mark tab-mark newline-mark))))
