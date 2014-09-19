@@ -125,6 +125,16 @@
   )
 )
 
+(defun gcm-scroll-down ()
+  (interactive)
+  (scroll-up 1))
+(defun gcm-scroll-up ()
+  (interactive)
+  (scroll-down 1))
+
+(global-set-key [(control prior)] 'gcm-scroll-up)
+(global-set-key [(control next)]  'gcm-scroll-down)
+
 (defcustom git-grep-switches "--extended-regexp -I --no-color -n"
   "Switches to pass to `git grep'."
   :type 'string)
@@ -139,7 +149,7 @@
            "Run git-grep (like this): "
            (format (concat
                     "cd %s && "
-                    "TERM=xterm git grep %s -e %s")
+                    "git --no-pager grep %s -e '\\b%s\\b'")
                    root
                    git-grep-switches
                    (let ((thing (and

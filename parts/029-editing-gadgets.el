@@ -87,6 +87,13 @@
         (format "dash-plugin://keys=ansible&query=%s" (current-word))
       (concat "dash://" (current-word)))))
 
+(defun my/append-kill-ring (beg end)
+  "Appen region current kill buffer"
+  (interactive "r")
+  (append-next-kill)
+  (kill-ring-save beg end)
+)
+
 ; flycheck
 ; (require 'flycheck)
 

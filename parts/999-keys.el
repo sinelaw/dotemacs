@@ -87,8 +87,8 @@
 (defun my/reset-default-face-font-height ()
   (interactive)
   (if (eq my/toggle-default-face-font-height-large nil)
-      (my/set-default-face-height 150)
       (my/set-default-face-height 105)
+      (my/set-default-face-height 150)
     )
   )
 
@@ -136,6 +136,7 @@
 
 (global-set-key [(f7)] 'magit-status)
 (global-set-key [(control x) (f7)] 'magit-branch-manager)
+(global-set-key [(control x) (control insert)] 'my/append-kill-ring)
 
 (global-set-key [(control f1)] 'ibuffer)
 (global-set-key [(shift control f1)] 'recentf-open-files)
@@ -146,8 +147,8 @@
 (global-set-key [(control shift f3)] 'vc-print-root-log)
 
 (global-set-key [f4] 'next-error)
-(global-set-key [(meta f4)] 'flymake-goto-next-error)
-(global-set-key [(ctrl f4)] 'flymake-display-err-menu-for-current-line)
+(global-set-key [(ctrl f4)] 'flycheck-first-error)
+(global-set-key [(shift ctrl f4)] 'flycheck-list-errors)
 
 (global-set-key [(control f5)] 'ff-find-other-file)
 (global-set-key [f5] 'switch-to-prev-buffer)
