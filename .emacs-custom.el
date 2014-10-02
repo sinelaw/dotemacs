@@ -11,8 +11,10 @@
  '(flycheck-highlighting-mode (quote sexps))
  '(git-grep-switches "--extended-regexp -I --no-color -n")
  '(ibuffer-default-sorting-mode (quote filename/process))
+ '(ido-default-buffer-method (quote selected-window))
  '(linum-format "%4d")
  '(safe-local-variable-values (quote ((include-header-prefix . "ELFS__") (eval setq dir-local-curdir (file-name-directory (let ((d (dir-locals-find-file "."))) (if (stringp d) d (car d))))) (ff-search-directories "../include" ".") (ff-search-directories "../../include") (ff-search-directories "include"))))
+ '(switch-to-buffer-preserve-window-point (quote already-displayed))
  '(whitespace-display-mappings nil)
  '(whitespace-style (quote (face tabs spaces trailing space-before-tab newline indentation empty space-after-tab space-mark tab-mark newline-mark))))
 (custom-set-faces
