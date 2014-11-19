@@ -8,21 +8,25 @@
 (autoload 'ghc-debug "ghc" nil t)
 
 ;; Haskell mode
-(defun my-haskell-mode-hook ()
+
+(defun my-structured-haskell-mode-hook ()
   (ghc-init)
-;;
-;; The original haskell mode
-;;  (turn-on-haskell-simple-indent)
-;;  (local-set-key [return] 'newline) ;; need this because newline-and-indent is annoying me
-;;
-;; Instead:
-;;
   (structured-haskell-mode)
   (local-set-key [return] 'shm/newline-indent)
   (local-set-key [delete] 'delete-char) ;; Instead of shm/delete
   (local-set-key [tab] 'shm/backtab)
-  (local-set-key [backtab] 'shm/tab)
+  (local-unset-key (kbd "("))
+  (local-unset-key (kbd ")"))
   (local-set-key [(ctrl f4)] 'ghc-display-errors)
+)
+
+(defun my-original-haskell-mode-hook ()
+  (ghc-init)
+  (turn-on-haskell-indentation)
+)
+
+(defun my-haskell-mode-hook ()
+  (my-original-haskell-mode-hook)
 )
 
 (setq shm-program-name "/home/dan/src/haskell/structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode")
@@ -30,3 +34,8 @@
 (require 'shm)
 
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
+
+(define-key haskell-mode-map (kbd "C-,") 
+  (lambda () (interactive) (haskell-move-nested-left 2)))
+(define-key haskell-mode-map (kbd "C-.") 
+  (lambda () (interactive) (haskell-move-nested-right 2)))
