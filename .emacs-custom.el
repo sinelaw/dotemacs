@@ -34,6 +34,7 @@
      (ff-search-directories "../include" ".")
      (ff-search-directories "../../include")
      (ff-search-directories "include"))))
+ '(show-trailing-whitespace t)
  '(switch-to-buffer-preserve-window-point (quote already-displayed))
  '(whitespace-display-mappings nil)
  '(whitespace-style
