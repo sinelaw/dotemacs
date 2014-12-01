@@ -77,14 +77,14 @@
     :command ("flymake-compat" source-inplace)
     :error-patterns
     ((error line-start
-           (message "In file included from") " " (file-name) ":" line ":"
-           line-end)
+	   (message "In file included from") " " (file-name) ":" line ":"
+	   line-end)
     (info line-start (file-name) ":" line ":" column
-          ": note: " (message) line-end)
+	  ": note: " (message) line-end)
     (warning line-start (file-name) ":" line ":" column
-          ": warning: " (message) line-end)
+	  ": warning: " (message) line-end)
     (error line-start (file-name) ":" line ":" column
-          ": " (or "fatal error" "error") ": " (message) line-end))
+	  ": " (or "fatal error" "error") ": " (message) line-end))
    :error-filter
    (lambda (errors)
      (flycheck-fold-include-errors
@@ -128,10 +128,10 @@
 (eval-after-load 'haskell-mode '(progn
   (define-key haskell-mode-map (kbd "C-x <up>") 'haskell-navigate-imports)
   (define-key haskell-mode-map (kbd "C-x <down>") 'haskell-navigate-imports-return)
-  (define-key haskell-mode-map (kbd "C-,") 
+  (define-key haskell-mode-map (kbd "C-,")
     (lambda () (interactive) (haskell-move-nested-left 2)))
-  (define-key haskell-mode-map (kbd "C-.") 
-    (lambda () (interactive) (haskell-move-nested-right 2)))  
+  (define-key haskell-mode-map (kbd "C-.")
+    (lambda () (interactive) (haskell-move-nested-right 2)))
   (define-key haskell-mode-map (kbd "C-x C-g .")
     'isearch-forward-symbol-at-point)
   (define-key haskell-mode-map (kbd "C-x C-g _")
@@ -150,7 +150,7 @@
 
 (defun my-original-haskell-mode-hook ()
 ;;   (ghc-init)
-  (setq ghc-display-error 'minibuffer)  
+  (setq ghc-display-error 'minibuffer)
   (turn-on-haskell-indentation)
 )
 
@@ -172,38 +172,38 @@
   (let ((this (current-buffer)))
     (if (memql this dax-tag-browsing-list)
       (progn
-          (find-tag (current-word))
-          (if (not (eq this (current-buffer)))
-              (add-to-list 'dax-tag-browsing-list (current-buffer)))
-        )
+	  (find-tag (current-word))
+	  (if (not (eq this (current-buffer)))
+	      (add-to-list 'dax-tag-browsing-list (current-buffer)))
+	)
       (save-selected-window
-        (save-excursion
-          (find-tag-other-window (current-word))
-          (setq dax-tag-browsing-list '())
-          (if (not (eq this (current-buffer)))
-              (add-to-list 'dax-tag-browsing-list (current-buffer)))
-        ))
+	(save-excursion
+	  (find-tag-other-window (current-word))
+	  (setq dax-tag-browsing-list '())
+	  (if (not (eq this (current-buffer)))
+	      (add-to-list 'dax-tag-browsing-list (current-buffer)))
+	))
      )
   )
 )
 
 (require 'align)
 (add-to-list 'align-rules-list
-             '(haskell-types
-               (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-               (modes quote (haskell-mode literate-haskell-mode))))
+	     '(haskell-types
+	       (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+	       (modes quote (haskell-mode literate-haskell-mode))))
 (add-to-list 'align-rules-list
-             '(haskell-assignment
-               (regexp . "\\(\\s-+\\)=\\s-+")
-               (modes quote (haskell-mode literate-haskell-mode))))
+	     '(haskell-assignment
+	       (regexp . "\\(\\s-+\\)=\\s-+")
+	       (modes quote (haskell-mode literate-haskell-mode))))
 (add-to-list 'align-rules-list
-             '(haskell-arrows
-               (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-               (modes quote (haskell-mode literate-haskell-mode))))
+	     '(haskell-arrows
+	       (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+	       (modes quote (haskell-mode literate-haskell-mode))))
 (add-to-list 'align-rules-list
-             '(haskell-left-arrows
-               (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-               (modes quote (haskell-mode literate-haskell-mode))))
+	     '(haskell-left-arrows
+	       (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+	       (modes quote (haskell-mode literate-haskell-mode))))
 
 (defun my/haskell-cabal-mode-hook ()
   (setq indent-tabs-mode nil)
@@ -226,11 +226,11 @@
 (defun my-after-make-frame-hook (&rest frame)
   (if window-system
       (let ((f (if (car frame)
-                   (car frame)
-                 (selected-frame))))
-        (progn
+		   (car frame)
+		 (selected-frame))))
+	(progn
 	  (set-face-background 'cursor "#00ff00" f)
-          (set-face-foreground 'mode-line "#dedede" f)))))
+	  (set-face-foreground 'mode-line "#dedede" f)))))
 (add-hook 'after-make-frame-functions 'my-after-make-frame-hook t)
 
 (defun emacsclient-post-frame-fixups ()
@@ -282,60 +282,60 @@
     (setq functions '())
 
     (if (string-match "struct \\([a-zA-Z0-9_]+\\) " tmp)
-        (let ()
-          (setq struct-name (match-string 1 tmp))
-          (setq start (point))
-          (search-forward "}")
-          (setq end (point))
-          (goto-char start)
-          (while (search-forward "(*" end t)
-            (let (funcname funcproto start-proto)
-              (setq tmp (point))
-              (if (search-forward ")(" end t)
-                  (let (a)
-                    (setq funcname (buffer-substring-no-properties tmp (- (point) 2)))
-                    (save-excursion
-                      (beginning-of-line)
-                      (setq start-proto (point))
-                      (search-forward ";" end)
-                      (setq funcproto (buffer-substring-no-properties start-proto (- (point) 1)))
-                      )
-                    (push (list funcname funcproto) functions)
-                    ))
-            )
-          )
-          (setq var-name (read-string "Variable: "))
-          (setq prefix (read-string "Prefix: "))
+	(let ()
+	  (setq struct-name (match-string 1 tmp))
+	  (setq start (point))
+	  (search-forward "}")
+	  (setq end (point))
+	  (goto-char start)
+	  (while (search-forward "(*" end t)
+	    (let (funcname funcproto start-proto)
+	      (setq tmp (point))
+	      (if (search-forward ")(" end t)
+		  (let (a)
+		    (setq funcname (buffer-substring-no-properties tmp (- (point) 2)))
+		    (save-excursion
+		      (beginning-of-line)
+		      (setq start-proto (point))
+		      (search-forward ";" end)
+		      (setq funcproto (buffer-substring-no-properties start-proto (- (point) 1)))
+		      )
+		    (push (list funcname funcproto) functions)
+		    ))
+	    )
+	  )
+	  (setq var-name (read-string "Variable: "))
+	  (setq prefix (read-string "Prefix: "))
 
-          (delete-region start end)
-          (mapc (lambda (f)
-             (let ((funcname (nth 0 f))
-                   (funcproto (nth 1 f)))
-               (setq funcproto (replace-regexp-in-string "([*]" (concat prefix "_") funcproto))
-               (setq funcproto (replace-regexp-in-string ")(" "(" funcproto))
-               (setq funcproto
-                     (if (string-match "\\`[ \t\n\r]+" funcproto)
-                         (replace-match "" t t funcproto) funcproto))
-               (insert funcproto)
-               (newline)
-               (insert "{")
-               (newline)
-               (insert "}")
-               (newline)
-               (newline)
-             ))
-             functions)
-          (insert "struct " struct-name " " var-name " = {")
-          (mapc (lambda (f)
-             (let ((funcname (nth 0 f))
-                   (funcproto (nth 1 f)))
-               (newline-and-indent)
-               (insert "." funcname " = " prefix "_" funcname ",")
-             ))
-             functions)
-          (newline)
-          (insert "}")
-        ))
+	  (delete-region start end)
+	  (mapc (lambda (f)
+	     (let ((funcname (nth 0 f))
+		   (funcproto (nth 1 f)))
+	       (setq funcproto (replace-regexp-in-string "([*]" (concat prefix "_") funcproto))
+	       (setq funcproto (replace-regexp-in-string ")(" "(" funcproto))
+	       (setq funcproto
+		     (if (string-match "\\`[ \t\n\r]+" funcproto)
+			 (replace-match "" t t funcproto) funcproto))
+	       (insert funcproto)
+	       (newline)
+	       (insert "{")
+	       (newline)
+	       (insert "}")
+	       (newline)
+	       (newline)
+	     ))
+	     functions)
+	  (insert "struct " struct-name " " var-name " = {")
+	  (mapc (lambda (f)
+	     (let ((funcname (nth 0 f))
+		   (funcproto (nth 1 f)))
+	       (newline-and-indent)
+	       (insert "." funcname " = " prefix "_" funcname ",")
+	     ))
+	     functions)
+	  (newline)
+	  (insert "}")
+	))
   )
 )
 
@@ -356,18 +356,18 @@
     (beginning-of-line)
     (save-excursion
       (catch 'foo
-        (while (< (point) end)
-          (if (not (search-forward "," end t))
-              (if (not (search-forward ")" end t))
-                  (throw 'foo t)))
-          (save-excursion
-            (backward-char)
-            (let ((start (point)))
-              (search-backward-regexp "[^a-zA-Z0-9_]")
-              (forward-char)
-              (push (buffer-substring-no-properties (point) start) params)
-              )
-            ))))
+	(while (< (point) end)
+	  (if (not (search-forward "," end t))
+	      (if (not (search-forward ")" end t))
+		  (throw 'foo t)))
+	  (save-excursion
+	    (backward-char)
+	    (let ((start (point)))
+	      (search-backward-regexp "[^a-zA-Z0-9_]")
+	      (forward-char)
+	      (push (buffer-substring-no-properties (point) start) params)
+	      )
+	    ))))
     (insert "\n")
     (insert "/**\n")
     (insert " * " funcname "()\n")
@@ -408,18 +408,18 @@
    (let ((root (vc-git-root default-directory)))
      (if root
        (list
-          (read-shell-command
-           "Run git-grep (like this): "
-           (format (concat
-                    "'\\b%s\\b'")
-                   (let ((thing (and
-                                 buffer-file-name
-                                 (thing-at-point 'symbol))))
-                     (or (and thing (progn
-                                      (set-text-properties 0 (length thing) nil thing)
-                                      (shell-quote-argument (regexp-quote thing))))
-                         "")))
-           'git-grep-history))
+	  (read-shell-command
+	   "Run git-grep (like this): "
+	   (format (concat
+		    "'\\b%s\\b'")
+		   (let ((thing (and
+				 buffer-file-name
+				 (thing-at-point 'symbol))))
+		     (or (and thing (progn
+				      (set-text-properties 0 (length thing) nil thing)
+				      (shell-quote-argument (regexp-quote thing))))
+			 "")))
+	   'git-grep-history))
        (list))))
 
    ;; Do the actual work
