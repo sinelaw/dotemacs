@@ -67,8 +67,8 @@
    `(org-todo ((t (:foreground ,red))))
 
    ;; show-paren-mode
-   `(show-paren-match ((t (:background ,blue :foreground ,current-line))))
-   `(show-paren-mismatch ((t (:background ,orange :foreground ,current-line))))
+   ;; `(show-paren-match ((t (:background ,blue :foreground ,current-line))))
+   ;; `(show-paren-mismatch ((t (:background ,orange :foreground ,current-line))))
 
    ;; whitespace-mode
    `(whitespace-empty ((t (:background ,yellow :foreground ,red))))
