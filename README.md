@@ -3,6 +3,12 @@ Dan's Emacs 24.4+ configuration
 
 This is a rebooted version of my configuration.
 
+So stuff require build for this to be used, so:
+
+```
+make
+```
+
 A few things to consider:
 
 * To use the native Emacs scrollbar I recompile Fedora's Emacs
