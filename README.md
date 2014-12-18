@@ -3,7 +3,7 @@ Dan's Emacs 24.4+ configuration
 
 This is a rebooted version of my configuration.
 
-So stuff require build for this to be used, so:
+Some stuff require build for this to be used, so:
 
 ```
 make
