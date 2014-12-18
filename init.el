@@ -225,7 +225,8 @@
   (kill-buffer (current-buffer)))
 
 ; Emacs 24 bugfix for face value after new-frame
-(defun my-after-make-frame-hook (&rest frame)
+(defun my/after-make-frame-hook (&rest frame)
+  (interactive)
   (if window-system
       (let ((f (if (car frame)
 		   (car frame)
@@ -233,10 +234,10 @@
 	(progn
 	  (set-face-background 'cursor "#00ff00" f)
 	  (set-face-foreground 'mode-line "#dedede" f)))))
-(add-hook 'after-make-frame-functions 'my-after-make-frame-hook t)
+(add-hook 'after-make-frame-functions 'my/after-make-frame-hook t)
 
 (defun emacsclient-post-frame-fixups ()
-  (my-after-make-frame-hook (selected-frame))
+  (my/after-make-frame-hook (selected-frame))
   ;; (load-file custom-file)
   ;; (my/reset-default-face-font-height)
   )
