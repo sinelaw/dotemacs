@@ -3,7 +3,6 @@
 (defun in-emacs-d (path)
   (concat emacs-dir path))
 (setq mode-dir (in-emacs-d "modes/"))
-(add-to-list 'load-path emacs-dir)
 (add-to-list 'load-path mode-dir)
 
 (let ((default-directory mode-dir))
