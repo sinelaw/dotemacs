@@ -8,3 +8,4 @@ git subtree ${cmd} -P modes/flycheck https://github.com/flycheck/flycheck.git 0.
 git subtree ${cmd} -P modes/gitmodes https://github.com/magit/git-modes.git master
 git subtree ${cmd} -P modes/magit https://github.com/magit/magit.git master
 git subtree ${cmd} -P modes/haskell-mode https://github.com/haskell/haskell-mode.git master
+git subtree ${cmd} -P modes/smooth-scrolling https://github.com/aspiers/smooth-scrolling.git master
