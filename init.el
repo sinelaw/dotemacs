@@ -23,6 +23,7 @@
 
 ;; cua-selection-mode - enables typing over a region to replace it
 (cua-selection-mode t)
+(column-number-mode)
 
 ;; Window settings
 (menu-bar-mode -1) ; get rid of the annoying menubars/toolbars etc.
@@ -74,7 +75,8 @@
 
 (flycheck-define-checker my/flymake-compatible-checker
     "A syntax checker using make."
-    :command ("flymake-compat" source-inplace)
+    :command ("~/.emacs.d/bin/flymake-compat" source-inplace
+	      source-original)
     :error-patterns
     ((error line-start
 	   (message "In file included from") " " (file-name) ":" line ":"
