@@ -441,10 +441,28 @@ buffer instead of replacing the text in region."
     )
 )
 
+(require 'unbound)
+
 ;; Git grep
+
 (defcustom git-grep-switches "--extended-regexp -I --no-color -n"
   "Switches to pass to `git grep'."
   :type 'string)
+
+(require 'grep-a-lot)
+(defun my/grep-a-lot-setup-keys()
+  "Define some key bindings for navigating multiple
+grep search results buffers."
+  (interactive)
+  (global-set-key [(control h) left] 'grep-a-lot-goto-prev)
+  (global-set-key [(control h) right] 'grep-a-lot-goto-next)
+  (global-set-key [(control h) up] 'grep-a-lot-pop-stack)
+  (global-set-key [(control h) down] 'grep-a-lot-clear-stack)
+  (global-set-key [(control h) home] 'grep-a-lot-restart-context)
+  )
+
+(my/grep-a-lot-setup-keys)
+(grep-a-lot-advise git-grep)
 
 (defun git-grep (command-args)
   ;; Read command-args
@@ -543,3 +561,5 @@ buffer instead of replacing the text in region."
 
 (global-set-key [f11] 'delete-window)
 (global-set-key [f12] 'call-last-kbd-macro)
+
+;;; init.el ends here
