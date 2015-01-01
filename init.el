@@ -57,6 +57,17 @@
 (setq server-socket-dir "~/.emacs.d/server")
 (server-start)
 
+;; C comment edit mode
+(require 'c-comment-edit)
+
+; drag stuff
+(require 'drag-stuff)
+(setq drag-stuff-modifier '(super control))
+(drag-stuff-global-mode t)
+
+(global-set-key [(meta mouse-4)] 'drag-stuff-up)
+(global-set-key [(meta mouse-5)] 'drag-stuff-down)
+
 ;; Always-on modes
 (ido-mode)
 (require 'ido-recentf-open)
