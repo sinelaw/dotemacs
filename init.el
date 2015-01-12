@@ -415,9 +415,24 @@
 (setq scroll-conservatively 9999
       scroll-preserve-screen-position t)
 
+(global-set-key (kbd "M-<up>") 'windmove-up)
+(global-set-key (kbd "M-<down>") 'windmove-down)
+(global-set-key (kbd "M-<right>") 'windmove-right)
+(global-set-key (kbd "M-<left>") 'windmove-left)
+
 ;; Markdown
 
 (require 'markdown-mode)
+(require 'sticky-windows)
+
+(defadvice split-window (after move-point-to-new-window activate)
+  "Moves the point to the newly created window after splitting."
+  (other-window 1))
+
+(global-set-key (kbd "M-p") 'shrink-window-horizontally)
+(global-set-key (kbd "M-[") 'enlarge-window-horizontally)
+(global-set-key (kbd "M--") 'shrink-window)
+(global-set-key (kbd "M-+") 'enlarge-window)
 
 (defun my/generalized-shell-command (command arg) ;; From StackOverflow
   "Unifies `shell-command' and `shell-command-on-region'. If no region is
@@ -529,6 +544,15 @@ grep search results buffers."
   (setq my/toggle-default-face-font-height-large (not my/toggle-default-face-font-height-large))
   (my/reset-default-face-font-height)
   )
+
+(defun ignore-error-wrapper (fn)
+  "Funtion return new function that ignore errors.
+   The function wraps a function with `ignore-errors' macro."
+  (lexical-let ((fn fn))
+    (lambda ()
+      (interactive)
+      (ignore-errors
+        (funcall fn)))))
 
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))

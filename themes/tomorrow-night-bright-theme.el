@@ -15,6 +15,7 @@
 
 (let ((background "#000000")
       (current-line "#2a2a2a")
+      (current-line-active "#4a5a6a")
       (selection "#424242")
       (foreground "#dedede")
       (comment "#969896")
@@ -34,7 +35,7 @@
    `(default ((t (:background ,background :foreground ,foreground))))
    `(fringe ((t (:background ,current-line))))
    `(minibuffer-prompt ((t (:foreground ,blue))))
-   `(mode-line ((t (:background ,current-line :foreground ,foreground))))
+   `(mode-line ((t (:background ,current-line-active :foreground ,foreground))))
    `(mode-line-inactive ((t (:background ,current-line :foreground ,foreground))))
    `(mode-line-emphasis ((t (:background ,current-line :foreground ,foreground))))
    `(mode-line-buffer-id ((t (:background ,current-line :foreground ,foreground))))
