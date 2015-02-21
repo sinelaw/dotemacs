@@ -420,6 +420,11 @@
 (global-set-key (kbd "M-<right>") 'windmove-right)
 (global-set-key (kbd "M-<left>") 'windmove-left)
 
+;; Rust
+
+(require 'rust-mode)
+
+
 ;; Markdown
 
 (require 'markdown-mode)
@@ -468,7 +473,7 @@ buffer instead of replacing the text in region."
 )
 
 (require 'unbound)
-(require 'highlight-symbol-query-replace)
+(require 'highlight-symbol)
 
 ;; Git grep
 
