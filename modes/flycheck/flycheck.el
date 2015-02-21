@@ -6093,7 +6093,7 @@ Relative paths are relative to the file being checked."
 This syntax checker needs Rust 0.10 or newer.
 
 See URL `http://www.rust-lang.org'."
-  :command ("rustc" "--no-trans"
+  :command ("rustc" "-Z" "no-trans"
             (option "--crate-type" flycheck-rust-crate-type)
             (option-flag "--test" flycheck-rust-check-tests)
             (option-list "-L" flycheck-rust-library-path concat)
