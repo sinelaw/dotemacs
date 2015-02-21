@@ -468,6 +468,7 @@ buffer instead of replacing the text in region."
 )
 
 (require 'unbound)
+(require 'highlight-symbol-query-replace)
 
 ;; Git grep
 
@@ -557,6 +558,10 @@ grep search results buffers."
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
 (global-set-key (kbd "C-v") 'yank)
+
+;; Swap M-y and C-y
+(global-set-key (kbd "M-y") 'yank)
+(global-set-key (kbd "C-y") 'yank-pop)
 
 (global-set-key (kbd "C-x <up>") 'buf-move-up)
 (global-set-key (kbd "C-x <down>") 'buf-move-down)
