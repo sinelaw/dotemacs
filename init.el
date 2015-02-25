@@ -424,6 +424,11 @@
 
 (require 'rust-mode)
 
+;; D lang
+
+(require 'd-mode)
+(add-to-list 'auto-mode-alist '("\\.d[i]?\\'" . d-mode))
+(flycheck-set-checker-executable 'd-dmd "ldc2")
 
 ;; Markdown
 

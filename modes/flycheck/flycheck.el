@@ -4814,8 +4814,8 @@ Relative paths are relative to the file being checked."
   "A D syntax checker using the DMD compiler.
 
 Requires DMD 2.066 or newer.  See URL `http://dlang.org/'."
-  :command ("dmd"
-            "-debug"                    ; Compile in debug mode
+  :command ("ldc2"
+            "-d-debug"                    ; Compile in debug mode
             "-o-"                       ; Don't generate an object file
             "-vcolumns"                 ; Add columns in output
             "-wi" ; Compilation will continue even if there are warnings
