@@ -44,6 +44,9 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 
+;; Auto-revert
+(global-auto-revert-mode)
+
 ;; Show-paren
 (setq show-paren-delay 0)
 (show-paren-mode)
@@ -428,11 +431,28 @@
 
 (require 'd-mode)
 (add-to-list 'auto-mode-alist '("\\.d[i]?\\'" . d-mode))
-(flycheck-set-checker-executable 'd-dmd "ldc2")
+
+(defun my-d-mode-hook ()
+  (setq c-indent-level 4)
+  (setq c-brace-imaginary-offset 0)
+  (setq c-basic-offset 4)
+  (setq c-brace-offset -4)
+  (setq c-argdecl-indent 4)
+  (setq c-label-offset -4)
+  (setq c-continued-statement-offset 4)
+  (setq indent-tabs-mode nil)
+  (linum-mode)
+  (local-set-key [return] 'newline-and-indent)
+  (setq tab-width 4))
+(add-hook 'd-mode-hook 'my-d-mode-hook)
 
 ;; Markdown
 
 (require 'markdown-mode)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+
+
 (require 'sticky-windows)
 
 (defadvice split-window (after move-point-to-new-window activate)

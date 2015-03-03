@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-revert-interval 5)
  '(doc-view-resolution 200)
  '(flycheck-checkers
    (quote
@@ -11,7 +12,6 @@
    (quote
     (c/c++-cppcheck c/c++-gcc c/c++-clang haskell-hlint)))
  '(flycheck-display-errors-delay 0)
- '(flycheck-display-errors-function (quote flycheck-display-error-messages))
  '(flycheck-highlighting-mode (quote sexps))
  '(git-grep-switches "--extended-regexp -I --no-color -n")
  '(haskell-process-log t)
