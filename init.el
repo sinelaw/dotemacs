@@ -1,7 +1,12 @@
+;;; Commentary;
+
 ;; Load paths
+;;; Code;
+
 (setq emacs-dir "~/.emacs.d/")
 (defun in-emacs-d (path)
   (concat emacs-dir path))
+
 (setq mode-dir (in-emacs-d "modes/"))
 (add-to-list 'load-path mode-dir)
 
@@ -17,7 +22,6 @@
 (load-theme 'tomorrow-night-bright t)
 
 ;; Misc
-(setq global-auto-revert-non-file-buffers t)
 (setq inhibit-splash-screen t)
 
 ;; cua-selection-mode - enables typing over a region to replace it
@@ -46,6 +50,7 @@
 
 ;; Auto-revert
 (global-auto-revert-mode)
+(setq global-auto-revert-non-file-buffers t)
 
 ;; Show-paren
 (setq show-paren-delay 0)
@@ -110,6 +115,9 @@
 
 (set-face-attribute 'flycheck-error nil :background "#990000")
 (set-face-attribute 'flycheck-warning nil :background "#505000")
+
+;; Company mode
+(require 'company)
 
 ;; Haskell
 (require 'haskell-mode-autoloads)
