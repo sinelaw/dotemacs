@@ -3,18 +3,16 @@
 import os
 import sys
 
-def main():
-    p = sys.argv[1]
-    po = ""
-    if len(sys.argv[2:]):
-        po = sys.argv[2:]
-        assert(len(po) == 1)
+class Error(Exception):
+    pass
+
+def find_closest_something(p, filename):
     found = False
     f = os.path.basename(p)
     d = os.path.dirname(p)
     while True:
         prev_d = d
-        if os.path.exists(os.path.join(d, "Makefile")):
+        if os.path.exists(os.path.join(d, filename)):
             found = True
             break
         f = os.path.join(os.path.basename(d), f)
@@ -22,9 +20,48 @@ def main():
         if prev_d == d:
             break
     if not found:
-        return
+        raise Error
 
-    cmd = "make -C %s GCC_COLORS= check-syntax CHK_SOURCES=%s CHK_SOURCES_ORIGINAL=%s 2>&1" % (d, f, po[0])
+    return (f, d)
+
+def other_exe(name):
+    return os.path.realpath(os.path.join(os.path.dirname(sys.argv[0]), name))
+
+def linux(f, d):
+    linux_flycheck = other_exe("linux-flycheck")
+    os.putenv("GCC_COLORS", "")
+    os.chdir(d)
+    cmd = linux_flycheck + " " + f
+    print cmd
+    r = os.system(cmd)
+    sys.exit(r)
+
+def main():
+    p = sys.argv[1]
+    po = ""
+    if len(sys.argv[2:]):
+        po = sys.argv[2:]
+        assert(len(po) == 1)
+
+    try:
+        (f, d) = find_closest_something(p, ".git")
+        project = None
+        readme = os.path.join(d, "README")
+        if os.path.exists(readme):
+            lines = open(readme, 'r').readlines()
+            for line in lines:
+                if line.strip() == "WHAT IS LINUX?":
+                    project = "Linux"
+                    break
+        if project == "Linux":
+            return linux(f, d)
+    except Error:
+        pass
+
+    # Assume standard Makefile flycheck protocol
+
+    (f, d) = find_closest_something(p, "Makefile")
+    cmd = "make -C %s check-syntax CHK_SOURCES=%s CHK_SOURCES_ORIGINAL=%s 2>&1" % (d, f, po[0])
     for line in os.popen(cmd):
         if line.startswith(f):
             line = p + line[len(f):]

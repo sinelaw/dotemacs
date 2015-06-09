@@ -49,6 +49,7 @@
 (set-keyboard-coding-system 'utf-8)
 
 ;; Auto-revert
+(setq auto-revert-verbose nil)
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t)
 
@@ -56,7 +57,9 @@
 (setq show-paren-delay 0)
 (show-paren-mode)
 
+;; Global Linum
 (global-linum-mode)
+(setq-default indicate-empty-lines t)
 
 ;; Usability
 (fset 'yes-or-no-p 'y-or-n-p) ; yes/no turns to y/n
@@ -73,11 +76,23 @@
 (setq drag-stuff-modifier '(super control))
 (drag-stuff-global-mode t)
 
-(global-set-key [(meta mouse-4)] 'drag-stuff-up)
-(global-set-key [(meta mouse-5)] 'drag-stuff-down)
+(defun my/compilation-hook ()
+  (make-local-variable 'show-trailing-whitespace)
+  (setq show-trailing-whitespace nil))
+(add-hook 'compilation-mode-hook 'my/compilation-hook)
+
+(require 'ansi-color)
+(defun my/colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'my/colorize-compilation-buffer)
 
 ;; Always-on modes
-(ido-mode)
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+
 (require 'ido-recentf-open)
 (recentf-mode 1)
 (put 'ido-exit-minibuffer 'disabled nil)
@@ -119,72 +134,85 @@
 ;; Company mode
 (require 'company)
 
+; (custom-set-variables '(company-ghc-show-info t))
+
+
 ;; Haskell
 (require 'haskell-mode-autoloads)
 
 ;; GHC stuff mode
 ;;
-;; ghc-mod disabled until memory consumption issues are sorted out!
-;;
-;; (require 'ghc)
-;; (setq ghc-module-command "~/.cabal/bin/ghc-mod")
-;; (autoload 'ghc-init "ghc" nil t)
-;; (autoload 'ghc-debug "ghc" nil t)
+(require 'ghc)
+(setq ghc-module-command "~/.cabal/bin/ghc-mod")
+(autoload 'ghc-init "ghc" nil t)
+(autoload 'ghc-debug "ghc" nil t)
 
-(defun my-structured-haskell-mode-hook ()
-  (ghc-init)
-  (structured-haskell-mode)
-  (local-set-key [return] 'shm/newline-indent)
-  (local-set-key [delete] 'delete-char) ;; Instead of shm/delete
-  (local-set-key [tab] 'shm/backtab)
-  (local-unset-key (kbd "("))
-  (local-unset-key (kbd ")"))
-  (local-set-key [(ctrl f4)] 'ghc-display-errors)
-)
-
-(defun my/ghc-goto-next-error ()
+(defun my/ghc-goto-first-error ()
   (interactive)
-  (beginning-of-buffer)
-  (ghc-goto-next-error)
+  (let ((orig (point)))
+    (beginning-of-buffer)
+    (let ((beg (point)))
+      (ghc-goto-next-error)
+      (if (eq (point) beg)
+	  (goto-char orig))))
   )
 
-(eval-after-load 'haskell-mode '(progn
+(defun my/run-ghc-compilation ()
+  (interactive)
+  (save-some-buffers 1)
+  (compile (concat "runhaskell -Wall " buffer-file-name))
+  )
+
+(defun my/original-haskell-mode-hook ()
+  (ghc-init)
+  (flycheck-mode)
+  (setq ghc-display-error 'minibuffer)
+  (turn-on-haskell-indentation)
+  (company-mode)
   (define-key haskell-mode-map (kbd "C-x <up>") 'haskell-navigate-imports)
   (define-key haskell-mode-map (kbd "C-x <down>") 'haskell-navigate-imports-return)
   (define-key haskell-mode-map (kbd "C-,")
     (lambda () (interactive) (haskell-move-nested-left 2)))
   (define-key haskell-mode-map (kbd "C-.")
     (lambda () (interactive) (haskell-move-nested-right 2)))
+  (define-key haskell-mode-map (kbd "C-c C-c")
+    'my/run-ghc-compilation)
+  (define-key haskell-mode-map (kbd "C-c r")
+    'ghc-toggle-check-command)
   (define-key haskell-mode-map (kbd "C-x C-g .")
     'isearch-forward-symbol-at-point)
   (define-key haskell-mode-map (kbd "C-x C-g _")
     'isearch-forward-symbol)
   (define-key haskell-mode-map (kbd "C-x C-g w")
     'isearch-forward-word)
-  ;; ghc-mod disabled
-  ;;
-  ;; (define-key haskell-mode-map [f4] 'ghc-goto-next-error)
-  ;; (define-key haskell-mode-map [(ctrl f4)] 'my/ghc-goto-next-error)
-  ;; (define-key haskell-mode-map [(shift ctrl f4)] 'ghc-display-errors)
-  ;; (define-key haskell-mode-map [(ctrl c) f4] 'ghc-check-insert-from-warning)
-  ;; (define-key haskell-mode-map [(ctrl c) f6] 'ghc-extract-type)
+  (define-key haskell-mode-map (kbd "C-c C-d")
+    'inferior-haskell-load-file)
+
+  (define-key haskell-mode-map [f4] 'ghc-goto-next-error)
+  (define-key haskell-mode-map [(ctrl f4)] 'my/ghc-goto-first-error)
+  (define-key haskell-mode-map [(shift ctrl f4)] 'ghc-display-errors)
+  (define-key haskell-mode-map [(ctrl c) f4] 'ghc-check-insert-from-warning)
   (define-key haskell-mode-map [(ctrl c) f5] 'haskell-mode-stylish-buffer)
- ))
-
-(defun my-original-haskell-mode-hook ()
-;;   (ghc-init)
-  (setq ghc-display-error 'minibuffer)
-  (turn-on-haskell-indentation)
 )
 
-(defun my-haskell-mode-hook ()
-  (my-original-haskell-mode-hook)
+(defun my/haskell-mode-hook ()
+  (my/original-haskell-mode-hook)
 )
+
+(defun my/inferior-haskell-mode-hook()
+  (make-local-variable 'show-trailing-whitespace)
+  (setq show-trailing-whitespace nil))
+(add-hook 'inferior-haskell-mode-hook 'my/inferior-haskell-mode-hook)
+
+
+(require 'company-ghc)
+(add-to-list 'company-backends 'company-ghc)
+(custom-set-variables '(company-ghc-show-info t))
 
 ;; (setq shm-program-name "/home/dan/src/haskell/structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode")
 ;; (add-to-list 'load-path "/home/dan/src/haskell/structured-haskell-mode/elisp")
 ;; (require 'shm)
-(add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
+(add-hook 'haskell-mode-hook 'my/haskell-mode-hook)
 
 (defvar dax-tag-browsing-list '())
 
@@ -257,15 +285,80 @@
 	  (set-face-foreground 'mode-line "#dedede" f)))))
 (add-hook 'after-make-frame-functions 'my/after-make-frame-hook t)
 
-(defun emacsclient-post-frame-fixups ()
+(defun my/emacsclient-post-frame-fixups ()
   (my/after-make-frame-hook (selected-frame))
   ;; (load-file custom-file)
   ;; (my/reset-default-face-font-height)
   )
 
-;; C++/C
+;; Overlay highlighting
 
-(defun my-c-mode-hook ()
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; redisplay
+
+(defface lawlist-active-region-face
+  '((t (:background "#3c3c3c")))
+  "Face for `lawlist-active-region-face`."
+  :group 'init)
+
+(defvar lawlist-redisplay-unhighlight-region-function
+  (lambda (rol) (when (overlayp rol) (delete-overlay rol))))
+
+(defvar lawlist-redisplay-highlight-region-function
+  (lambda (start end window rol)
+    (if (not (overlayp rol))
+        (let ((nrol (make-overlay start end)))
+          (funcall lawlist-redisplay-unhighlight-region-function rol)
+          (overlay-put nrol 'window window)
+          (overlay-put nrol 'face 'lawlist-active-region-face)
+          (overlay-put nrol 'priority '(10000 . 100))
+          nrol)
+      (unless (and (eq (overlay-buffer rol) (current-buffer))
+                   (eq (overlay-start rol) start)
+                   (eq (overlay-end rol) end))
+        (move-overlay rol start end (current-buffer)))
+      rol)))   
+
+(defun lawlist-redisplay--update-region-highlight (window)
+  (with-current-buffer (window-buffer window)
+    (let ((rol (window-parameter window 'internal-region-overlay)))
+      (if (not (region-active-p))
+          (funcall lawlist-redisplay-unhighlight-region-function rol)
+        (let* ((pt (window-point window))
+               (mark (mark))
+               (start (min pt mark))
+               (end   (max pt mark))
+               (new
+                (funcall lawlist-redisplay-highlight-region-function
+                         start end window rol)))
+          (unless (equal new rol)
+            (set-window-parameter window 'internal-region-overlay
+                                  new)))))))
+
+(defun lawlist-redisplay--update-region-highlights (windows)
+  (with-demoted-errors "lawlist-redisplay--update-region-highlights: %S"
+    (if (null windows)
+        (lawlist-redisplay--update-region-highlight (selected-window))
+      (unless (listp windows) (setq windows (window-list-1 nil nil t)))
+      (if highlight-nonselected-windows
+          (mapc #'lawlist-redisplay--update-region-highlight windows)
+        (let ((msw (and (window-minibuffer-p) (minibuffer-selected-window))))
+          (dolist (w windows)
+            (if (or (eq w (selected-window)) (eq w msw))
+                (lawlist-redisplay--update-region-highlight w)
+              (funcall lawlist-redisplay-unhighlight-region-function
+                       (window-parameter w 'internal-region-overlay)))))))))
+
+;; simple.el -- lines 4683 to 4684
+(remove-function pre-redisplay-function #'redisplay--update-region-highlights)
+
+(add-function :before pre-redisplay-function #'lawlist-redisplay--update-region-highlights)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; C++/C
+(defun my/c-mode-hook ()
 ;;  (whitespace-mode)
   (setq c-indent-level 8)
   (setq c-brace-imaginary-offset 0)
@@ -276,11 +369,12 @@
   (setq c-continued-statement-offset 8)
   (setq indent-tabs-mode t)
   (linum-mode)
-  (local-set-key [return] 'newline-and-indent)
+  (my/c-cc-mode-hook-set-keys)
   (setq tab-width 8))
-(add-hook 'c-mode-hook 'my-c-mode-hook)
 
-(defun my-c++-mode-hook ()
+(add-hook 'c-mode-hook 'my/c-mode-hook)
+
+(defun my/c++-mode-hook ()
   (setq c-indent-level 4)
   (setq c-brace-imaginary-offset 0)
   (setq c-basic-offset 4)
@@ -290,11 +384,11 @@
   (setq c-continued-statement-offset 4)
   (setq indent-tabs-mode nil)
   (linum-mode)
-  (local-set-key [return] 'newline-and-indent)
+  (my/c-cc-mode-hook-set-keys)
   (setq tab-width 4))
-(add-hook 'c++-mode-hook 'my-c++-mode-hook)
+(add-hook 'c++-mode-hook 'my/c++-mode-hook)
 
-(defun c-instantiate-vtable ()
+(defun my/c-instantiate-vtable ()
   "---"
   (interactive)
   (let (orig pt tmp start end struct-name functions prefix var-name)
@@ -363,7 +457,7 @@
   )
 )
 
-(defun c-prototype-comment ()
+(defun my/c-prototype-comment ()
   "---"
   (interactive)
   (let (orig pt funcname end params i)
@@ -406,6 +500,13 @@
   )
 )
 
+(defun my/align-c-function-parameters ()
+  (interactive)
+  (unless (region-active-p) (error "No region selected"))
+  (align-regexp (region-beginning) (region-end) "[,(]\\(\\s-*\\)" 1 1 t)
+  (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\()[ \t]*;\\)" 1 1 t)
+  )
+
 ;; Use 'C-c v' to review the commit for the currently edited commit message
 
 (defun my/magit-show-diff-current-head ()
@@ -413,23 +514,23 @@
   (magit-diff "HEAD~1" "HEAD")
 )
 
-(defun my/git-commit-mode-hook ()
-  (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
+(defun my/magit-show-diff-current-head-working-tree ()
+  (interactive)
+  (magit-diff-working-tree "HEAD")
 )
 
 (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
 
 (require 'magit)
+(require 'diff-hl)
+(global-diff-hl-mode)
 
 (require 'smooth-scrolling)
 (setq smooth-scroll-margin 5)
 (setq scroll-conservatively 9999
       scroll-preserve-screen-position t)
 
-(global-set-key (kbd "M-<up>") 'windmove-up)
-(global-set-key (kbd "M-<down>") 'windmove-down)
-(global-set-key (kbd "M-<right>") 'windmove-right)
-(global-set-key (kbd "M-<left>") 'windmove-left)
+(require 'buffer-move)
 
 ;; Rust
 
@@ -440,7 +541,7 @@
 (require 'd-mode)
 (add-to-list 'auto-mode-alist '("\\.d[i]?\\'" . d-mode))
 
-(defun my-d-mode-hook ()
+(defun my/d-mode-hook ()
   (setq c-indent-level 4)
   (setq c-brace-imaginary-offset 0)
   (setq c-basic-offset 4)
@@ -450,9 +551,10 @@
   (setq c-continued-statement-offset 4)
   (setq indent-tabs-mode nil)
   (linum-mode)
-  (local-set-key [return] 'newline-and-indent)
+  (my/d-mode-hook-set-keys)
   (setq tab-width 4))
-(add-hook 'd-mode-hook 'my-d-mode-hook)
+
+(add-hook 'd-mode-hook 'my/d-mode-hook)
 
 ;; Markdown
 
@@ -466,11 +568,6 @@
 (defadvice split-window (after move-point-to-new-window activate)
   "Moves the point to the newly created window after splitting."
   (other-window 1))
-
-(global-set-key (kbd "M-p") 'shrink-window-horizontally)
-(global-set-key (kbd "M-[") 'enlarge-window-horizontally)
-(global-set-key (kbd "M--") 'shrink-window)
-(global-set-key (kbd "M-+") 'enlarge-window)
 
 (defun my/generalized-shell-command (command arg) ;; From StackOverflow
   "Unifies `shell-command' and `shell-command-on-region'. If no region is
@@ -507,6 +604,9 @@ buffer instead of replacing the text in region."
 
 (require 'unbound)
 (require 'highlight-symbol)
+
+(setq highlight-symbol-on-navigation-p t)
+
 
 ;; Git grep
 
@@ -584,6 +684,12 @@ grep search results buffers."
   (my/reset-default-face-font-height)
   )
 
+(defun my/what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
 (defun ignore-error-wrapper (fn)
   "Funtion return new function that ignore errors.
    The function wraps a function with `ignore-errors' macro."
@@ -593,6 +699,51 @@ grep search results buffers."
       (ignore-errors
         (funcall fn)))))
 
+(defun my/git-comment-amend-no-questions ()
+  (interactive)
+  (shell-command "git commit --amend --no-edit --date=\"`date -R`\" -a")
+  )
+
+(defun my/magit-log-new-frame ()
+  (interactive)
+  (make-frame-command)
+  (magit-log)
+  (delete-other-windows)
+  )
+
+
+
+
+(defun my/vc-visit-file-revision (file rev)
+  "Visit revision REV of FILE in another window.
+With prefix argument, uses the current window instead.
+If the current file is named `F', the revision is named `F.~REV~'.
+If `F.~REV~' already exists, use it instead of checking it out again."
+  ;; based on `vc-revision-other-window'.
+  (interactive
+   (let ((file (expand-file-name
+                (read-file-name
+                 (if (buffer-file-name)
+                     (format "File (%s): " (file-name-nondirectory
+                                            (buffer-file-name)))
+                   "File: ")))))
+     (require 'vc)
+     (unless (vc-backend file)
+       (error "File %s is not under version control" file))
+     (list file (vc-read-revision
+                 "Revision to visit (default is working revision): "
+                 (list file)))))
+  (require 'vc)
+  (unless (vc-backend file)
+    (error "File %s is not under version control" file))
+  (let ((revision (if (string-equal rev "")
+                      (vc-working-revision file)
+                    rev))
+        (visit (if current-prefix-arg
+                   'switch-to-buffer
+                 'switch-to-buffer-other-window)))
+    (funcall visit (vc-find-revision file revision))))
+
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
 (global-set-key (kbd "C-v") 'yank)
@@ -601,12 +752,13 @@ grep search results buffers."
 (global-set-key (kbd "M-y") 'yank)
 (global-set-key (kbd "C-y") 'yank-pop)
 
-(global-set-key (kbd "C-x <up>") 'buf-move-up)
-(global-set-key (kbd "C-x <down>") 'buf-move-down)
-(global-set-key (kbd "C-x <right>") 'buf-move-right)
-(global-set-key (kbd "C-x <left>") 'buf-move-left)
-
+(global-set-key [(control d)] 'highlight-symbol-prev)
+(global-set-key [(control f)] 'highlight-symbol-next)
 (global-set-key (kbd "M-^") 'highlight-symbol-query-replace)
+
+(global-set-key (kbd "C-x <left>") 'diff-hl-previous-hunk)
+(global-set-key (kbd "C-x <delete>") 'diff-hl-revert-hunk)
+(global-set-key (kbd "C-x <right>") 'diff-hl-next-hunk)
 
 (global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control l)] 'find-file)
@@ -619,8 +771,52 @@ grep search results buffers."
 
 (global-set-key [(control f2)] 'dired-jump)
 
-(global-set-key [(control f3)] 'my/spawn-dup-in-current-dir)
-(global-set-key [(control shift f3)] 'vc-print-root-log)
+(global-set-key [(control prior)] 'backward-paragraph)
+(global-set-key [(control next)] 'forward-paragraph)
+
+(global-set-key [f3] 'my/spawn-dup-in-current-dir)
+(global-set-key [(control f3)] 'magit-log)
+(global-set-key [(control x) (control f3)] 'my/magit-log-new-frame)
+(global-set-key [(control x) (v) (e)] 'my/magit-show-diff-current-head-working-tree)
+(global-set-key [(control x) (v) (S)] 'magit-status)
+(global-set-key (kbd "C-x v <return>") 'my/git-comment-amend-no-questions)
+
+(global-set-key (kbd "C-x v <up>") 'buf-move-up)
+(global-set-key (kbd "C-x v <down>") 'buf-move-down)
+(global-set-key (kbd "C-x v <right>") 'buf-move-right)
+(global-set-key (kbd "C-x v <left>") 'buf-move-left)
+(global-set-key (kbd "C-x v <insert>") 'magit-commit)
+(global-set-key (kbd "C-x v l") 'magit-log)
+
+(global-unset-key [(control n)]) ;; next-line
+(global-unset-key [(control p)]) ;; previous-line
+(global-unset-key [(control q)]) ;; quoted-insert
+(global-unset-key (kbd "C--")) ;; negative-arugment
+(global-unset-key (kbd "C-/")) ;; undo
+(global-unset-key (kbd "C-@")) ;; set-mark-command
+(global-unset-key (kbd "C-_")) ;; undo
+(global-unset-key (kbd "M-a")) ;; backward-sentence
+(global-set-key (kbd "M-a") 'my/magit-show-diff-current-head-working-tree)
+(global-set-key (kbd "M-n") 'magit-status)
+(global-unset-key (kbd "M-c")) ;; capitalize-word
+(global-set-key (kbd "M-c") 'copy-to-register)
+(global-unset-key (kbd "M-e")) ;; forward-sentence
+(global-set-key (kbd "M-e") 'magit-log)
+(global-unset-key (kbd "M-f")) ;; forward-word
+(global-unset-key (kbd "M-i")) ;; tab-to-tab-stop
+(global-set-key (kbd "M-i") 'insert-register)
+(global-unset-key (kbd "M-k")) ;; kill-sentence
+(global-set-key (kbd "M-k") 'highlight-symbol-query-replace)
+(global-unset-key (kbd "M-t")) ;; transport-words
+(global-set-key (kbd "M-t") 'query-replace)
+(global-unset-key (kbd "M-v")) ;; scroll-down-command
+(global-set-key (kbd "M-v") 'winner-undo)
+(global-unset-key (kbd "M-b")) ;; backward-word
+(global-set-key (kbd "M-b") 'winner-redo)
+(global-unset-key (kbd "M-{")) ;; backward-paragraph
+(global-unset-key (kbd "M-}")) ;; forward-paragraph
+(global-unset-key (kbd "M-~")) ;; not-modified
+(global-unset-key (kbd "M-SPC")) ;; just-one-space
 
 (global-set-key [f4] 'next-error)
 (global-set-key [(ctrl f4)] 'flycheck-first-error)
@@ -639,5 +835,37 @@ grep search results buffers."
 
 (global-set-key [f11] 'delete-window)
 (global-set-key [f12] 'call-last-kbd-macro)
+
+(defun my/c-cc-mode-hook-set-keys ()
+  (local-set-key [return] 'newline-and-indent)
+  (local-unset-key [(control d)])
+  (local-unset-key [(meta e)])
+  (local-unset-key [(meta a)])
+)
+
+(defun my/d-mode-hook-set-keys ()
+  (local-set-key [return] 'newline-and-indent))
+
+(defun my/git-commit-mode-hook ()
+  (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
+)
+
+(global-set-key (kbd "M-p") 'shrink-window-horizontally)
+(global-set-key (kbd "M-[") 'enlarge-window-horizontally)
+(global-set-key (kbd "M--") 'shrink-window)
+(global-set-key (kbd "M-+") 'enlarge-window)
+
+(global-set-key (kbd "M-<up>") 'windmove-up)
+(global-set-key (kbd "M-<down>") 'windmove-down)
+(global-set-key (kbd "M-<right>") 'windmove-right)
+(global-set-key (kbd "M-<left>") 'windmove-left)
+
+(eval-after-load "magit"
+  '(define-key magit-diff-mode-map (kbd "k") 'magit-revert-item))
+
+;; Mouse
+
+(global-set-key [(meta mouse-4)] 'drag-stuff-up)
+(global-set-key [(meta mouse-5)] 'drag-stuff-down)
 
 ;;; init.el ends here

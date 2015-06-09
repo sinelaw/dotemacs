@@ -4,13 +4,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-revert-interval 5)
+ '(company-ghc-show-info t)
  '(doc-view-resolution 200)
  '(flycheck-checkers
    (quote
     (asciidoc my/flymake-compatible-checker cfengine chef-foodcritic coffee coffee-coffeelint css-csslint d-dmd elixir emacs-lisp emacs-lisp-checkdoc erlang eruby-erubis go-gofmt go-golint go-vet go-build go-test haml handlebars haskell-ghc haskell-hlint html-tidy javascript-jshint javascript-eslint javascript-gjslint json-jsonlint less lua make perl perl-perlcritic php php-phpmd php-phpcs puppet-parser puppet-lint python-flake8 python-pylint racket rst rst-sphinx ruby-rubocop ruby-rubylint ruby ruby-jruby rust sass scala scss sh-bash sh-posix-dash sh-posix-bash sh-zsh sh-shellcheck slim tex-chktex tex-lacheck texinfo verilog-verilator xml-xmlstarlet xml-xmllint yaml-jsyaml yaml-ruby)))
  '(flycheck-disabled-checkers
    (quote
-    (c/c++-cppcheck c/c++-gcc c/c++-clang haskell-hlint)))
+    (c/c++-cppcheck c/c++-gcc c/c++-clang haskell-hlint haskell-ghc)))
  '(flycheck-display-errors-delay 0)
  '(flycheck-highlighting-mode (quote sexps))
  '(git-grep-switches "--extended-regexp -I --no-color -n")
@@ -69,6 +70,7 @@
  '(ghc-face-error ((t (:background "#990000"))))
  '(ghc-face-warn ((t (:background "#505000"))))
  '(hl-line ((t (:inherit col-highlight :background "green4"))) t)
+ '(lawlist-active-region-face ((t (:background "#3c3c3c"))))
  '(linum ((t (:inherit (shadow default) :background "#2a2a2a" :foreground "#778888"))))
  '(scroll-bar ((t (:background "#111111" :foreground "#999999"))))
  '(show-paren-match ((((class color) (background dark)) (:background "#262e4e"))))
