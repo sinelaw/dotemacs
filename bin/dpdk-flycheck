@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import sys, re, os
+
+def main():
+    arg = sys.argv[1]
+    m = re.match("flycheck_(.*).(c|h)", arg)
+    if not m:
+        m = re.match("([^/]*).(c|h)", arg)
+        if not m:
+            return
+
+    base, ext = m.groups()
+    ext = 'o'
+    params = []
+    cmdfile = os.path.join(".%s.%s.cmd" % (base, ext))
+    output_file = False
+    source_file = False
+
+    if not os.path.exists(cmdfile):
+        return
+
+    i = iter(open(cmdfile).readlines()[0].strip().split(' ')[2:])
+    index = 0
+    for p in i:
+        index += 1
+        if index == 1:
+            params.append(p)
+            params.append("-x")
+            params.append("c")
+            params.append("-fsyntax-only")
+            continue
+
+        p = p.replace("\\#", "#")
+        if not p:
+            continue
+
+        if p.startswith('-Wp,'):
+            continue
+
+        if p in ['-o', '-include']:
+            params.append(p)
+            p = i.next()
+            params.append(p)
+            continue
+
+        if not p.startswith('-'):
+            p = os.path.join(os.path.dirname(p), arg)
+            params.append(p)
+            continue
+
+        params.append(p)
+
+    cmd = ' '.join(params)
+    os.system(cmd)
+
+if __name__ == "__main__":
+    main()

@@ -28,15 +28,22 @@ def other_exe(name):
     return os.path.realpath(os.path.join(os.path.dirname(sys.argv[0]), name))
 
 def linux(f, d):
-    linux_flycheck = other_exe("linux-flycheck")
-    os.putenv("GCC_COLORS", "")
+    exe = other_exe("linux-flycheck")
     os.chdir(d)
-    cmd = linux_flycheck + " " + f
-    print cmd
+    cmd = exe + " " + f
+    r = os.system(cmd)
+    sys.exit(r)
+
+def dpdk(f):
+    exe = other_exe("dpdk-flycheck")
+    os.chdir(os.path.dirname(f))
+    cmd = exe + " " + os.path.basename(f)
     r = os.system(cmd)
     sys.exit(r)
 
 def main():
+    os.putenv("GCC_COLORS", "")
+
     p = sys.argv[1]
     po = ""
     if len(sys.argv[2:]):
@@ -55,6 +62,21 @@ def main():
                     break
         if project == "Linux":
             return linux(f, d)
+    except Error:
+        pass
+
+    try:
+        (f, d) = find_closest_something(p, "MAINTAINERS")
+        project = None
+        maintainers = os.path.join(d, "MAINTAINERS")
+        if os.path.exists(maintainers):
+            lines = open(maintainers, 'r').readlines()
+            if lines[0] == "DPDK Maintainers\n":
+                project = "DPDK"
+        if project == "DPDK":
+            # This is how we canonically find the dir path from the source path
+            # Not perfect, but conventional for now.
+            return dpdk(os.path.join(os.path.dirname(d), "build", "dir", "build", f))
     except Error:
         pass
 
