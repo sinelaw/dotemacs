@@ -562,8 +562,17 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 
+;; Repository root
+
+(require 'repository-root)
+(add-to-list 'repository-root-matchers repository-root-matcher/git)
 
 (require 'sticky-windows)
+
+(defun my/open-repository-root-dir ()
+  (interactive)
+  (find-file (repository-root))
+)
 
 (defadvice split-window (after move-point-to-new-window activate)
   "Moves the point to the newly created window after splitting."
@@ -615,18 +624,6 @@ buffer instead of replacing the text in region."
   :type 'string)
 
 (require 'grep-a-lot)
-(defun my/grep-a-lot-setup-keys()
-  "Define some key bindings for navigating multiple
-grep search results buffers."
-  (interactive)
-  (global-set-key [(control h) left] 'grep-a-lot-goto-prev)
-  (global-set-key [(control h) right] 'grep-a-lot-goto-next)
-  (global-set-key [(control h) up] 'grep-a-lot-pop-stack)
-  (global-set-key [(control h) down] 'grep-a-lot-clear-stack)
-  (global-set-key [(control h) home] 'grep-a-lot-restart-context)
-  )
-
-(my/grep-a-lot-setup-keys)
 (grep-a-lot-advise git-grep)
 
 (defun git-grep (command-args)
@@ -667,7 +664,6 @@ grep search results buffers."
   (set-face-attribute 'default nil :height h)
 )
 
-
 (setq my/toggle-default-face-font-height-large nil)
 
 (defun my/reset-default-face-font-height ()
@@ -690,7 +686,7 @@ grep search results buffers."
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-(defun ignore-error-wrapper (fn)
+(defun my/ignore-error-wrapper (fn)
   "Funtion return new function that ignore errors.
    The function wraps a function with `ignore-errors' macro."
   (lexical-let ((fn fn))
@@ -710,9 +706,6 @@ grep search results buffers."
   (magit-log)
   (delete-other-windows)
   )
-
-
-
 
 (defun my/vc-visit-file-revision (file rev)
   "Visit revision REV of FILE in another window.
@@ -788,6 +781,9 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key (kbd "C-x v <insert>") 'magit-commit)
 (global-set-key (kbd "C-x v l") 'magit-log)
 
+(global-unset-key [(control meta r)])  ;; isearch-backward-regexp
+(global-set-key [(control meta r)] 'my/open-repository-root-dir)
+
 (global-unset-key [(control n)]) ;; next-line
 (global-unset-key [(control p)]) ;; previous-line
 (global-unset-key [(control q)]) ;; quoted-insert
@@ -796,6 +792,8 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-unset-key (kbd "C-@")) ;; set-mark-command
 (global-unset-key (kbd "C-_")) ;; undo
 (global-unset-key (kbd "M-a")) ;; backward-sentence
+(global-unset-key (kbd "M-=")) ;; count-words-region
+(global-set-key (kbd "M-=") 'magit-branch-manager)
 (global-set-key (kbd "M-a") 'my/magit-show-diff-current-head-working-tree)
 (global-set-key (kbd "M-n") 'magit-status)
 (global-unset-key (kbd "M-c")) ;; capitalize-word
@@ -849,6 +847,19 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (defun my/git-commit-mode-hook ()
   (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
 )
+
+(defun my/grep-a-lot-setup-keys()
+  "Define some key bindings for navigating multiple
+grep search results buffers."
+  (interactive)
+  (global-set-key [(control h) left] 'grep-a-lot-goto-prev)
+  (global-set-key [(control h) right] 'grep-a-lot-goto-next)
+  (global-set-key [(control h) up] 'grep-a-lot-pop-stack)
+  (global-set-key [(control h) down] 'grep-a-lot-clear-stack)
+  (global-set-key [(control h) home] 'grep-a-lot-restart-context)
+  )
+
+(my/grep-a-lot-setup-keys)
 
 (global-set-key (kbd "M-p") 'shrink-window-horizontally)
 (global-set-key (kbd "M-[") 'enlarge-window-horizontally)
