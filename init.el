@@ -569,6 +569,13 @@
 
 (require 'sticky-windows)
 
+(defun my/append-to-kill-ring (&optional arg)
+  "Append to clipboard"
+  (interactive "P")
+  (append-next-kill)
+  (kill-ring-save (mark) (point))
+)
+
 (defun my/open-repository-root-dir ()
   (interactive)
   (find-file (repository-root))
@@ -698,6 +705,8 @@ buffer instead of replacing the text in region."
 (defun my/git-comment-amend-no-questions ()
   (interactive)
   (shell-command "git commit --amend --no-edit --date=\"`date -R`\" -a")
+  (magit-refresh-all)
+  (diff-hl-update)
   )
 
 (defun my/magit-log-new-frame ()
@@ -789,11 +798,13 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-unset-key [(control q)]) ;; quoted-insert
 (global-unset-key (kbd "C--")) ;; negative-arugment
 (global-unset-key (kbd "C-/")) ;; undo
+(global-unset-key (kbd "C-\\")) ;; toggle-input-mode
+(global-set-key (kbd "C-\\") 'my/append-to-kill-ring)
 (global-unset-key (kbd "C-@")) ;; set-mark-command
 (global-unset-key (kbd "C-_")) ;; undo
-(global-unset-key (kbd "M-a")) ;; backward-sentence
 (global-unset-key (kbd "M-=")) ;; count-words-region
 (global-set-key (kbd "M-=") 'magit-branch-manager)
+(global-unset-key (kbd "M-a")) ;; backward-sentence
 (global-set-key (kbd "M-a") 'my/magit-show-diff-current-head-working-tree)
 (global-set-key (kbd "M-n") 'magit-status)
 (global-unset-key (kbd "M-c")) ;; capitalize-word
