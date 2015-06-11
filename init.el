@@ -57,6 +57,11 @@
 (setq show-paren-delay 0)
 (show-paren-mode)
 
+;; Smart-parens
+(require 'smartparens)
+; (require 'smartparens-config)
+; (smartparens-global-strict-mode)
+
 ;; Global Linum
 (global-linum-mode)
 (setq-default indicate-empty-lines t)
@@ -746,6 +751,9 @@ If `F.~REV~' already exists, use it instead of checking it out again."
                  'switch-to-buffer-other-window)))
     (funcall visit (vc-find-revision file revision))))
 
+;; Workspaces
+(require 'workspaces)
+
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
 (global-set-key (kbd "C-v") 'yank)
@@ -753,6 +761,11 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 ;; Swap M-y and C-y
 (global-set-key (kbd "M-y") 'yank)
 (global-set-key (kbd "C-y") 'yank-pop)
+
+(global-set-key (kbd "C-s-1") '(lambda () (interactive) (workspace-goto ?1)))
+(global-set-key (kbd "C-s-2") '(lambda () (interactive) (workspace-goto ?2)))
+(global-set-key (kbd "C-s-3") '(lambda () (interactive) (workspace-goto ?3)))
+(global-set-key (kbd "C-s-4") '(lambda () (interactive) (workspace-goto ?4)))
 
 (global-set-key [(control d)] 'highlight-symbol-prev)
 (global-set-key [(control f)] 'highlight-symbol-next)
@@ -764,6 +777,36 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 (global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control l)] 'find-file)
+
+(global-set-key (kbd "C-S-a") 'sp-beginning-of-sexp)
+(global-set-key (kbd "C-S-d") 'sp-end-of-sexp)
+
+(global-set-key (kbd "C-M-a") 'sp-backward-sexp)
+(global-set-key (kbd "C-M-d") 'sp-forward-sexp)
+
+(global-set-key (kbd "C-M-f") 'sp-down-sexp)
+(global-set-key (kbd "C-M-b") 'sp-up-sexp)
+
+(global-set-key (kbd "C-M-e") 'sp-backward-down-sexp)
+(global-set-key (kbd "C-M-u") 'sp-backward-up-sexp)
+
+(global-set-key (kbd "C-M-n") 'sp-next-sexp)
+(global-set-key (kbd "C-M-p") 'sp-previous-sexp)
+(global-set-key (kbd "C-M-k") 'sp-kill-sexp)
+(global-set-key (kbd "C-M-w") 'sp-copy-sexp)
+
+(global-set-key (kbd "M-<delete>") 'sp-unwrap-sexp)
+(global-set-key (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
+
+(global-set-key (kbd "C-x D") 'sp-splice-sexp)
+(global-set-key (kbd "C-k") 'sp-kill-hybrid-sexp)
+
+(global-set-key (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
+(global-set-key (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
+(global-set-key (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
+
+(global-set-key (kbd "C-]") 'sp-select-next-thing-exchange)
+(global-set-key (kbd "C-M-]") 'sp-select-next-thing)
 
 (global-set-key [(control meta g)] 'my/kill-current-buffer)
 (global-set-key [(meta g)] 'goto-line)

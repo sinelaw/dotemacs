@@ -33,13 +33,16 @@ You can kill a workspace with 'k' and fallback on 1."
 	(workspace-goto ?1)
 	(setq workspaces-list (remove deskid-to-del workspaces-list))))
      (t (setq add "\n!-!-! Please specify a valid workspace number in (1-9), 0 do edit template, 'k' to kill current workspace in (2-9)")))
-    (message (concat "Now on workspace " (char-to-string current-workspace) "\nWorkspaces list is : " (mapconcat 'char-to-string (sort (copy-sequence workspaces-list) '<) ", ") add))))
+    ))
 
 ;; workspaces init
 (window-configuration-to-register ?0)
 (defvar workspaces-list nil)
 (setq current-workspace ?0)
+
 (workspace-create-new ?1)
 (workspace-create-new ?2)
 (workspace-create-new ?3)
 (workspace-create-new ?4)
+
+(provide 'workspaces)
