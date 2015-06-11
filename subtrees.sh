@@ -32,5 +32,5 @@ ${cmd} modes/dmode https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode.git 
 ${cmd} modes/grep-a-lot https://github.com/ZungBang/emacs-grep-a-lot.git master
 ${cmd} modes/company-mode https://github.com/company-mode/company-mode 0.8.11
 ${cmd} modes/company-ghc https://github.com/iquiw/company-ghc.git v0.1.9
-
+${cmd} modes/smartparens https://github.com/Fuco1/smartparens.git master
 
