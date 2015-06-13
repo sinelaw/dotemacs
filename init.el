@@ -1,7 +1,7 @@
 ;;; Commentary;
 
 ;; Load paths
-;;; Code;
+;;; Code:
 
 (setq emacs-dir "~/.emacs.d/")
 (defun in-emacs-d (path)
@@ -100,6 +100,8 @@
 
 (require 'ido-recentf-open)
 (recentf-mode 1)
+(setq recentf-max-menu-items 1000)
+
 (put 'ido-exit-minibuffer 'disabled nil)
 (setq auto-save-list-file-prefix nil)
 (setq make-backup-files nil)
@@ -525,6 +527,7 @@
 )
 
 (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
+(add-hook 'magit-branch-manager-mode-hook 'my/git-magit-branches-mode-hook)
 
 (require 'magit)
 (require 'diff-hl)
@@ -721,6 +724,11 @@ buffer instead of replacing the text in region."
   (delete-other-windows)
   )
 
+(defun my/magit-file-log-y ()
+  (interactive)
+  (magit-file-log (buffer-file-name))
+  )
+
 (defun my/vc-visit-file-revision (file rev)
   "Visit revision REV of FILE in another window.
 With prefix argument, uses the current window instead.
@@ -778,8 +786,8 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key [(control b)] 'switch-to-buffer)
 (global-set-key [(control l)] 'find-file)
 
-(global-set-key (kbd "C-S-a") 'sp-beginning-of-sexp)
-(global-set-key (kbd "C-S-d") 'sp-end-of-sexp)
+(global-set-key (kbd "C-s-a") 'sp-beginning-of-sexp)
+(global-set-key (kbd "C-s-d") 'sp-end-of-sexp)
 
 (global-set-key (kbd "C-M-a") 'sp-backward-sexp)
 (global-set-key (kbd "C-M-d") 'sp-forward-sexp)
@@ -795,18 +803,8 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key (kbd "C-M-k") 'sp-kill-sexp)
 (global-set-key (kbd "C-M-w") 'sp-copy-sexp)
 
-(global-set-key (kbd "M-<delete>") 'sp-unwrap-sexp)
-(global-set-key (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
-
-(global-set-key (kbd "C-x D") 'sp-splice-sexp)
-(global-set-key (kbd "C-k") 'sp-kill-hybrid-sexp)
-
-(global-set-key (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
-(global-set-key (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
-(global-set-key (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
-
+(global-set-key (kbd "M-<delete>") 'sp-splice-sexp)
 (global-set-key (kbd "C-]") 'sp-select-next-thing-exchange)
-(global-set-key (kbd "C-M-]") 'sp-select-next-thing)
 
 (global-set-key [(control meta g)] 'my/kill-current-buffer)
 (global-set-key [(meta g)] 'goto-line)
@@ -836,9 +834,12 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-unset-key [(control meta r)])  ;; isearch-backward-regexp
 (global-set-key [(control meta r)] 'my/open-repository-root-dir)
 
+(global-set-key (kbd "C-!") 'delete-other-windows)
+
 (global-unset-key [(control n)]) ;; next-line
 (global-unset-key [(control p)]) ;; previous-line
 (global-unset-key [(control q)]) ;; quoted-insert
+(global-set-key [(control q)] 'magit-file-log)
 (global-unset-key (kbd "C--")) ;; negative-arugment
 (global-unset-key (kbd "C-/")) ;; undo
 (global-unset-key (kbd "C-\\")) ;; toggle-input-mode
@@ -855,6 +856,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-unset-key (kbd "M-e")) ;; forward-sentence
 (global-set-key (kbd "M-e") 'magit-log)
 (global-unset-key (kbd "M-f")) ;; forward-word
+(global-set-key (kbd "M-f") 'my/magit-file-log-y)
 (global-unset-key (kbd "M-i")) ;; tab-to-tab-stop
 (global-set-key (kbd "M-i") 'insert-register)
 (global-unset-key (kbd "M-k")) ;; kill-sentence
@@ -866,9 +868,22 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-unset-key (kbd "M-b")) ;; backward-word
 (global-set-key (kbd "M-b") 'winner-redo)
 (global-unset-key (kbd "M-{")) ;; backward-paragraph
+(global-set-key (kbd "M-{") 'sp-beginning-of-sexp)
 (global-unset-key (kbd "M-}")) ;; forward-paragraph
+(global-set-key (kbd "M-}") 'sp-end-of-sexp)
 (global-unset-key (kbd "M-~")) ;; not-modified
 (global-unset-key (kbd "M-SPC")) ;; just-one-space
+
+(defun my/git-commit-mode-hook ()
+  (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
+)
+
+(defun my/git-magit-branches-mode-hook ()
+  (local-set-key (kbd "M-n") 'magit-status)
+)
+
+(eval-after-load "magit"
+  '(define-key magit-diff-mode-map (kbd "k") 'magit-revert-item))
 
 (global-set-key [f4] 'next-error)
 (global-set-key [(ctrl f4)] 'flycheck-first-error)
@@ -898,10 +913,6 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (defun my/d-mode-hook-set-keys ()
   (local-set-key [return] 'newline-and-indent))
 
-(defun my/git-commit-mode-hook ()
-  (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
-)
-
 (defun my/grep-a-lot-setup-keys()
   "Define some key bindings for navigating multiple
 grep search results buffers."
@@ -924,9 +935,6 @@ grep search results buffers."
 (global-set-key (kbd "M-<down>") 'windmove-down)
 (global-set-key (kbd "M-<right>") 'windmove-right)
 (global-set-key (kbd "M-<left>") 'windmove-left)
-
-(eval-after-load "magit"
-  '(define-key magit-diff-mode-map (kbd "k") 'magit-revert-item))
 
 ;; Mouse
 
