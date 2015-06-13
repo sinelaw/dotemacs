@@ -1,0 +1,27 @@
+#!/bin/env python
+
+import subprocess
+import sys
+
+def main():
+    data = subprocess.check_output(["git", "ls-files"] + sys.argv[1:])
+
+    def flush(files):
+        for x in subprocess.check_output(["ls", "-l"] + files).splitlines():
+            print x
+
+    files = []
+    size = 0
+    for line in data.splitlines():
+        size += len(line) + 1
+        files += [line]
+        if size >= 10000:
+            flush(files)
+            files = []
+            size = 0
+
+    if files:
+        flush(files)
+
+main()
+

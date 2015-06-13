@@ -631,6 +631,7 @@ buffer instead of replacing the text in region."
 
 (setq highlight-symbol-on-navigation-p t)
 
+(require 'dired-list)
 
 ;; Git grep
 
@@ -728,6 +729,17 @@ buffer instead of replacing the text in region."
   (interactive)
   (magit-file-log (buffer-file-name))
   )
+
+(defun my/dired-list-git-ls-files (dir)
+  "List all files in DIR managed by git and display results as a `dired' buffer."
+  (interactive "Directory: ")
+  (dired-list dir
+              (concat "git ls-files " dir)
+              (concat "~/.emacs.d/bin/git-ls-files-long '" dir "'")))
+
+(defun my/dired-list-git-ls-files-current-dir ()
+  (interactive)
+  (my/dired-list-git-ls-files (expand-file-name default-directory)))
 
 (defun my/vc-visit-file-revision (file rev)
   "Visit revision REV of FILE in another window.
@@ -873,6 +885,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key (kbd "M-}") 'sp-end-of-sexp)
 (global-unset-key (kbd "M-~")) ;; not-modified
 (global-unset-key (kbd "M-SPC")) ;; just-one-space
+(global-set-key (kbd "M-SPC") 'my/dired-list-git-ls-files-current-dir)
 
 (defun my/git-commit-mode-hook ()
   (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
