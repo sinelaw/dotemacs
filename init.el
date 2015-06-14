@@ -527,7 +527,6 @@
 )
 
 (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
-(add-hook 'magit-branch-manager-mode-hook 'my/git-magit-branches-mode-hook)
 
 (require 'magit)
 (require 'diff-hl)
@@ -826,8 +825,8 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 (global-set-key [(control f2)] 'dired-jump)
 
-(global-set-key [(control prior)] 'backward-paragraph)
-(global-set-key [(control next)] 'forward-paragraph)
+(global-set-key [(control prior)] 'sp-beginning-of-sexp)
+(global-set-key [(control next)] 'sp-end-of-sexp)
 
 (global-set-key [f3] 'my/spawn-dup-in-current-dir)
 (global-set-key [(control f3)] 'magit-log)
@@ -849,6 +848,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key (kbd "C-!") 'delete-other-windows)
 
 (global-unset-key [(control n)]) ;; next-line
+(global-set-key [(control n)] 'magit-status)
 (global-unset-key [(control p)]) ;; previous-line
 (global-unset-key [(control q)]) ;; quoted-insert
 (global-set-key [(control q)] 'magit-file-log)
@@ -862,7 +862,6 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key (kbd "M-=") 'magit-branch-manager)
 (global-unset-key (kbd "M-a")) ;; backward-sentence
 (global-set-key (kbd "M-a") 'my/magit-show-diff-current-head-working-tree)
-(global-set-key (kbd "M-n") 'magit-status)
 (global-unset-key (kbd "M-c")) ;; capitalize-word
 (global-set-key (kbd "M-c") 'copy-to-register)
 (global-unset-key (kbd "M-e")) ;; forward-sentence
@@ -889,10 +888,6 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 (defun my/git-commit-mode-hook ()
   (local-set-key [(control c) (v)] 'my/magit-show-diff-current-head)
-)
-
-(defun my/git-magit-branches-mode-hook ()
-  (local-set-key (kbd "M-n") 'magit-status)
 )
 
 (eval-after-load "magit"
