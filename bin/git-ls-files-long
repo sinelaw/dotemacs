@@ -2,17 +2,25 @@
 
 import subprocess
 import sys
+import re
 
 def main():
     data = subprocess.check_output(["git", "ls-files"] + sys.argv[1:])
 
+    ws = re.compile('([ \t]+)')
     def flush(files):
-        for x in subprocess.check_output(["ls", "-l"] + files).splitlines():
-            print x
+        for x in subprocess.check_output(["ls", "-l", "-d"] + files).splitlines():
+            p = ws.split(x)
+            p[7] = ""
+            p[8] = "%10s" % (p[8], )
+            p[1] = ""
+            p[2] = "%3s" % (p[2], )
+            p[0] = "%-11s" % (p[0], )
+            print "  " + ''.join(p)
 
     files = []
     size = 0
-    for line in data.splitlines():
+    for line in [".."] + data.splitlines():
         size += len(line) + 1
         files += [line]
         if size >= 10000:
