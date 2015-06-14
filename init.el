@@ -770,8 +770,9 @@ If `F.~REV~' already exists, use it instead of checking it out again."
                  'switch-to-buffer-other-window)))
     (funcall visit (vc-find-revision file revision))))
 
-;; Workspaces
-(require 'workspaces)
+(require 'projectile)
+(setq projectile-indexing-method 'alien)
+(projectile-global-mode)
 
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
@@ -816,6 +817,48 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 (global-set-key (kbd "M-<delete>") 'sp-splice-sexp)
 (global-set-key (kbd "C-]") 'sp-select-next-thing-exchange)
+
+(global-set-key (kbd "M-] ESC")       'projectile-project-buffers-other-buffer)
+(global-set-key (kbd "M-] !")         'projectile-run-shell-command-in-root)
+(global-set-key (kbd "M-] &")         'projectile-run-async-shell-command-in-root)
+
+(global-set-key (kbd "M-] D")         'projectile-dired)
+(global-set-key (kbd "M-] F")         'projectile-find-file-in-known-projects)
+(global-set-key (kbd "M-] I")         'projectile-ibuffer)
+(global-set-key (kbd "M-] P")         'projectile-test-project)
+(global-set-key (kbd "M-] R")         'projectile-regenerate-tags)
+(global-set-key (kbd "M-] S")         'projectile-save-project-buffers)
+(global-set-key (kbd "M-] T")         'projectile-find-test-file)
+(global-set-key (kbd "M-] a")         'projectile-find-other-file)
+(global-set-key (kbd "M-] b")         'projectile-switch-to-buffer)
+(global-set-key (kbd "M-] c")         'projectile-compile-project)
+(global-set-key (kbd "M-] d")         'projectile-find-dir)
+(global-set-key (kbd "M-] e")         'projectile-recentf)
+(global-set-key (kbd "M-] f")         'projectile-find-file)
+(global-set-key (kbd "M-] g")         'projectile-find-file-dwim)
+(global-set-key (kbd "M-] i")         'projectile-invalidate-cache)
+(global-set-key (kbd "M-] j")         'projectile-find-tag)
+(global-set-key (kbd "M-] k")         'projectile-kill-buffers)
+(global-set-key (kbd "M-] l")         'projectile-find-file-in-directory)
+(global-set-key (kbd "M-] m")         'projectile-commander)
+(global-set-key (kbd "M-] o")         'projectile-multi-occur)
+(global-set-key (kbd "M-] p")         'projectile-switch-project)
+(global-set-key (kbd "M-] r")         'projectile-replace)
+
+(global-set-key (kbd "M-] t")         'projectile-toggle-between-implementation-and-test)
+(global-set-key (kbd "M-] v")         'projectile-vc)
+(global-set-key (kbd "M-] z")         'projectile-cache-current-file)
+
+(global-set-key (kbd "M-] s g")       'projectile-grep)
+(global-set-key (kbd "M-] s s")       'projectile-ag)
+
+(global-set-key (kbd "M-] 4 C-o")     'projectile-display-buffer)
+(global-set-key (kbd "M-] 4 a")       'projectile-find-other-file-other-window)
+(global-set-key (kbd "M-] 4 b")       'projectile-switch-to-buffer-other-window)
+(global-set-key (kbd "M-] 4 d")       'projectile-find-dir-other-window)
+(global-set-key (kbd "M-] 4 f")       'projectile-find-file-other-window)
+(global-set-key (kbd "M-] 4 g")       'projectile-find-file-dwim-other-window)
+(global-set-key (kbd "M-] 4 t")       'projectile-find-implementation-or-test-other-window)
 
 (global-set-key [(control meta g)] 'my/kill-current-buffer)
 (global-set-key [(meta g)] 'goto-line)
@@ -934,8 +977,6 @@ grep search results buffers."
 
 (my/grep-a-lot-setup-keys)
 
-(global-set-key (kbd "M-p") 'shrink-window-horizontally)
-(global-set-key (kbd "M-[") 'enlarge-window-horizontally)
 (global-set-key (kbd "M--") 'shrink-window)
 (global-set-key (kbd "M-+") 'enlarge-window)
 
