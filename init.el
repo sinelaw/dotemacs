@@ -62,6 +62,11 @@
 ; (require 'smartparens-config)
 ; (smartparens-global-strict-mode)
 
+(savehist-mode 1)
+(setq savehist-file "~/.emacs.d/.savehist")
+(if (file-exists-p savehist-file)
+    (load-file savehist-file))
+
 ;; Global Linum
 (global-linum-mode)
 (setq-default indicate-empty-lines t)
@@ -774,6 +779,10 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (setq projectile-indexing-method 'alien)
 (projectile-global-mode)
 
+(setq project-specifics-file "~/.emacs.d/projects.el")
+(if (file-exists-p project-specifics-file)
+    (load-file project-specifics-file))
+
 ;; Global bindings
 (global-set-key (kbd "C-;") (lambda () (interactive) (my/toggle-default-face-font-height)))
 (global-set-key (kbd "C-v") 'yank)
@@ -941,11 +950,15 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 (global-set-key [(shift ctrl f4)] 'flycheck-list-errors)
 
 (global-set-key [(control f5)] 'ff-find-other-file)
+(global-set-key [f6] 'projectile-find-other-file)
 (global-set-key [f5] 'switch-to-prev-buffer)
 
 (global-set-key [(control tab)] 'other-window)
 (global-set-key [(control z)] 'undo)
-(global-set-key [(f9)] 'compile)
+
+(global-set-key [(f9)] 'projectile-compile-project)
+;; F9, Use to be compile, but doesn't use project root
+;; for invoking building commands these days?
 
 (global-set-key [(meta f9)] 'recompile)
 (global-set-key [(control f9)] 'git-grep)
