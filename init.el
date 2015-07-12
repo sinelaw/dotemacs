@@ -126,10 +126,9 @@
 ;; Flycheck
 (require 'flycheck)
 
-(flycheck-define-checker my/flymake-compatible-checker
+(flycheck-define-checker my/project-aware-checker
     "A syntax checker using make."
-    :command ("~/.emacs.d/bin/flymake-compat" source-inplace
-	      source-original)
+    :command ("~/.emacs.d/bin/project-aware-checker" source source-original)
     :error-patterns
     ((error line-start
 	   (message "In file included from") " " (file-name) ":" line ":"
