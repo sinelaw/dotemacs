@@ -22,7 +22,12 @@
  '(linum-format "%4d")
  '(safe-local-variable-values
    (quote
-    ((include-header-prefix . "ELFS__")
+    ((c-continued-statement-offset . 8)
+     (c-label-offset . -8)
+     (c-argdecl-indent . 8)
+     (c-brace-offset . -8)
+     (c-brace-imaginary-offset . 0)
+     (include-header-prefix . "ELFS__")
      (eval setq dir-local-curdir
 	   (file-name-directory
 	    (let

@@ -33,6 +33,7 @@
 (tool-bar-mode 0)
 (scroll-bar-mode t)
 (modify-all-frames-parameters '((scroll-bar-width . 10)))
+(setq auto-window-vscroll nil)
 
 ; winner mode - Undo/redo window configuration with C-c <left>/<right>
 (winner-mode 1)
@@ -56,6 +57,13 @@
 ;; Show-paren
 (setq show-paren-delay 0)
 (show-paren-mode)
+
+;; Get rid of the secondary selection
+(global-set-key [remap mouse-drag-secondary] 'mouse-drag-region)
+(global-set-key [remap mouse-set-secondary] 'mouse-set-region)
+(global-set-key [remap mouse-start-secondary] 'mouse-set-point)
+(global-set-key [remap mouse-yank-secondary] 'mouse-yank-primary)
+(global-set-key [remap mouse-secondary-save-then-kill] 'mouse-save-then-kill)
 
 ;; Smart-parens
 (require 'smartparens)
@@ -733,6 +741,13 @@ buffer instead of replacing the text in region."
   (interactive)
   (magit-file-log (buffer-file-name))
   )
+
+(defun my/c-backslash-align ()
+  (interactive)
+  (let ((col (read-number "Column: ")))
+    (setq c-backslash-max-column col)
+    (call-interactively 'c-backslash-region)
+    ))
 
 (defun my/dired-list-git-ls-files (dir)
   "List all files in DIR managed by git and display results as a `dired' buffer."
