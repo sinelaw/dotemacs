@@ -34,8 +34,7 @@ compilerInvoke tmp_file cdir stdparams = do
                           "-fno-diagnostics-color", "-iquote", BS.pack cdir]
   let str_params = BS.unwords params
   BS.putStrLn str_params
-  setEnv "LANG" "en_US"
-  (code, stdout, stderr) <- readProcessWithExitCode "bash" ["-c", BS.unpack str_params] ""
+  (code, stdout, stderr) <- readProcessWithExitCode "env" ["LANG=en_US", "bash", "-c", BS.unpack str_params] ""
   processResult (code, stdout, stderr)
 
 linuxChecker :: FilePath -> FilePath -> IO CheckerResult
@@ -106,7 +105,7 @@ makefileChecker tmp_file orig_src_file = do
              params = [
                "check-syntax",
                "-C", dir, "CHK_SOURCES=" ++ tmp_file,
-               "QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))]
+               "LANG=en_US QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))]
            putStrLn $ "make " ++ unwords params
            (code, stdout, stderr) <- readProcessWithExitCode "make" params ""
            processResult (code, stdout, stderr)
