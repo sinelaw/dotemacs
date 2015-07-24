@@ -4,9 +4,11 @@
 module Main where
 
 import           Control.Monad          (forM_)
+import           Control.Monad          (when)
 import qualified Data.ByteString.Char8  as BS
 import qualified Data.ByteString.Lazy   as BL
 import           Data.ByteString.Search (replace)
+import qualified Data.IORef             as IOR
 import           System.Directory       (canonicalizePath, copyFile,
                                          doesFileExist, setCurrentDirectory)
 import           System.Environment     (getArgs, setEnv)
@@ -14,15 +16,37 @@ import           System.FilePath        (replaceDirectory, splitDirectories,
                                          takeBaseName, takeDirectory, (</>))
 import           System.IO.Temp         (withSystemTempDirectory)
 import           System.Process         (readProcessWithExitCode)
+import           Text.Regex.TDFA        ((=~))
 
 data CheckerResult =
   CheckerFound
   | CheckerNotFound
 
-processResult :: (t, t1, String) -> IO CheckerResult
-processResult (code, stdout, stderr) = do
+processResult :: FilePath -> (t, t1, String) -> IO CheckerResult
+processResult source_file (code, stdout, stderr) = do
   let rlines = BS.lines (BS.pack stderr)
-  forM_ rlines $ \line ->
+  top_include <- IOR.newIORef Nothing
+  forM_ rlines $ \line -> do
+
+    case ((line =~ ("^(In file included from |                 from )([^:]+)[:]([0-9]+)"
+                    :: BS.ByteString)) :: [[BS.ByteString]]) of
+       [[_, _, filename, line_nr]] -> IOR.writeIORef top_include (Just (filename, line_nr))
+       _ -> return ()
+    case ((line =~ ("^([^:]+)[:] At top level:"
+                    :: BS.ByteString)) :: [[BS.ByteString]]) of
+       [[_, _]] -> IOR.writeIORef top_include Nothing
+       _ -> case ((line =~ ("^([^:]+[:][0-9]+[:][0-9]+[:]) ((fatal error|warning|error)[:])( .*)"
+                    :: BS.ByteString)) :: [[BS.ByteString]]) of
+            [[_, location, prefix, _, rest_of_line]] ->
+                do  included_from <- IOR.readIORef top_include
+                    case included_from of
+                       Nothing -> return ()
+                       Just (filename, line_nr) ->
+                         BS.putStrLn $ BS.concat [ filename, ":", line_nr, ":0: ",
+                                                   prefix, " (included) ", location, rest_of_line]
+                    return ()
+            _ -> return ()
+
     BS.putStrLn line
   return CheckerFound
 
@@ -35,7 +59,7 @@ compilerInvoke tmp_file cdir stdparams = do
   let str_params = BS.unwords params
   BS.putStrLn str_params
   (code, stdout, stderr) <- readProcessWithExitCode "env" ["LANG=en_US", "bash", "-c", BS.unpack str_params] ""
-  processResult (code, stdout, stderr)
+  processResult tmp_file (code, stdout, stderr)
 
 linuxChecker :: FilePath -> FilePath -> IO CheckerResult
 linuxChecker tmp_file orig_src_file = do
@@ -65,11 +89,11 @@ linuxChecker tmp_file orig_src_file = do
       -- Find the location of the kernel tree, as we must have it in order
       -- to build a kernel module.
       --
-      -- For internal modules, the path is relative, so it is tiival.
+      -- For internal modules, the path is relative, so it is trivial.
       -- For external modules, there's more difficulty. On older trees
-      -- there is an include to kconfig.h that can tell us, but on knewer
-      -- kernels such information will only exist in the resulting .ko, which
-      -- is too late in the build.
+      -- there is an include to kconfig.h that can tell us, but on newer
+      -- kernels such information only exists in the resulting .ko, which
+      -- is too late in the build process.
       --
       -- A slight modification to an external kernel module Makefile can
       -- pass a '-D__ORIG_KDIR__=' as a harmless addition to the command line,
@@ -108,7 +132,7 @@ makefileChecker tmp_file orig_src_file = do
                "LANG=en_US QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))]
            putStrLn $ "make " ++ unwords params
            (code, stdout, stderr) <- readProcessWithExitCode "make" params ""
-           processResult (code, stdout, stderr)
+           processResult tmp_file (code, stdout, stderr)
         else do
            if dir == "/"
              then return CheckerNotFound
@@ -126,34 +150,38 @@ standaloneChecker tmp_file orig_src_file = do
     else
       return CheckerNotFound
 
-mainIndirect :: FilePath -> FilePath -> IO ()
-mainIndirect tmp_file orig_src_file =
+mainIndirect :: (String -> Bool) -> FilePath -> FilePath -> IO ()
+mainIndirect f tmp_file orig_src_file =
   -- TODO: check for .c and .cc/.cpp extensions
   do let
        checkers = [
-             linuxChecker
-           , makefileChecker
-           , standaloneChecker
+             ("linux", linuxChecker)
+           , ("makefile", makefileChecker)
+           , ("standalone", standaloneChecker)
          ]
      testCheckers checkers
   where testCheckers [] = return ()
-        testCheckers (checker:others) = do
-          r <- checker tmp_file orig_src_file
-          case r of
-            CheckerNotFound -> testCheckers others
-            CheckerFound -> return ()
+        testCheckers ((name, checker):others) = do
+          if f name then do
+            r <- checker tmp_file orig_src_file
+            case r of
+              CheckerNotFound -> testCheckers others
+              CheckerFound -> return ()
+            else
+              testCheckers others
 
-mainDirect :: FilePath -> IO ()
-mainDirect src_file =
+mainDirect :: (String -> Bool) -> FilePath -> IO ()
+mainDirect f src_file =
   withSystemTempDirectory "pacXXXXXX" $ \dir -> do
     let tmp_file = replaceDirectory src_file dir
     copyFile src_file tmp_file
-    mainIndirect tmp_file src_file
+    mainIndirect f tmp_file src_file
 
 main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [src_file] -> mainDirect src_file
-    [tmp_file, orig_src_file] -> mainIndirect tmp_file orig_src_file
+    [src_file] -> mainDirect (const True) src_file
+    ['c':'h':'e':'c':'k':'e':'r':':':xs, src_file] -> mainDirect (== xs) src_file
+    [tmp_file, orig_src_file] -> mainIndirect (const True) tmp_file orig_src_file
     _ -> putStrLn $ "Cannot work with argument " ++ (show args)
