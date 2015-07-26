@@ -22,9 +22,10 @@ data CheckerResult =
   CheckerFound
   | CheckerNotFound
 
-processResult :: FilePath -> (t, t1, String) -> IO CheckerResult
+processResult :: FilePath -> (t, String, String) -> IO CheckerResult
 processResult source_file (code, stdout, stderr) = do
   let rlines = BS.lines (BS.pack stderr)
+  BS.putStr (BS.pack stdout)
   top_include <- IOR.newIORef Nothing
   forM_ rlines $ \line -> do
 
@@ -131,7 +132,7 @@ makefileChecker tmp_file orig_src_file = do
                "-C", dir, "CHK_SOURCES=" ++ tmp_file,
                "LANG=en_US",
                "QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))]
-           putStrLn $ "make " ++ unwords params
+           putStrLn $ "+ make " ++ unwords params
            (code, stdout, stderr) <- readProcessWithExitCode "make" params ""
            processResult tmp_file (code, stdout, stderr)
         else do
