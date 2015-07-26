@@ -36,15 +36,16 @@ processResult source_file (code, stdout, stderr) = do
     case ((line =~ ("^([^:]+)[:] At top level:"
                     :: BS.ByteString)) :: [[BS.ByteString]]) of
        [[_, _]] -> IOR.writeIORef top_include Nothing
-       _ -> case ((line =~ ("^([^:]+[:][0-9]+[:][0-9]+[:]) ((fatal error|warning|error)[:])( .*)"
+       _ -> case ((line =~ ("^([^:]+)([:][0-9]+[:][0-9]+[:]) ((fatal error|warning|error)[:])( .*)"
                     :: BS.ByteString)) :: [[BS.ByteString]]) of
-            [[_, location, prefix, _, rest_of_line]] ->
+            [[_, filename_in_line, location, prefix, _, rest_of_line]] ->
                 do  included_from <- IOR.readIORef top_include
-                    case included_from of
-                       Nothing -> return ()
-                       Just (filename, line_nr) ->
+                    case (included_from, filename_in_line /= (BS.pack source_file)) of
+                       (Just (filename, line_nr), True) ->
                          BS.putStrLn $ BS.concat [ filename, ":", line_nr, ":0: ",
-                                                   prefix, " (included) ", location, rest_of_line]
+                                                   prefix, " (included) ",
+                                                   filename_in_line, location, rest_of_line]
+                       _ -> return ()
                     return ()
             _ -> return ()
 
