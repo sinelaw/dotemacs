@@ -17,9 +17,9 @@ cabal-version:       >=1.10
 
 executable pac
   main-is:             Pac.hs
-  -- other-modules:       
-  -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base >=4.7 && <5
                      , temporary
                      , directory
                      , filepath
