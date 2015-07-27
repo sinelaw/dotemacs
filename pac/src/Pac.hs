@@ -3,6 +3,7 @@
 
 module Main where
 
+import           Control.Applicative    ((<$>))
 import           Control.Monad          (forM_)
 import           Control.Monad          (when)
 import qualified Data.ByteString.Char8  as BS
@@ -127,12 +128,20 @@ makefileChecker tmp_file orig_src_file = do
       e <- doesFileExist $ dir </> "Makefile"
       if e
         then do
+           let pac_flycheck_file = dir </> ".pac-flycheck"
+           flagsFileExists <- doesFileExist pac_flycheck_file
+           flags <- if flagsFileExists
+                    then map BS.unpack . BS.lines <$> BS.readFile pac_flycheck_file
+                    else return []
            let
-             params = [
-               "check-syntax",
-               "-C", dir, "CHK_SOURCES=" ++ tmp_file,
-               "LANG=en_US",
-               "QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))]
+             params =
+                 [ "check-syntax"
+                 , "-C", dir
+                 , "CHK_SOURCES=" ++ tmp_file
+                 , "LANG=en_US"
+                 , "QUOTE_INCLUDE_DIRS=" ++ (show (takeDirectory root))
+                 ] ++ flags
+
            putStrLn $ "+ make " ++ unwords params
            (code, stdout, stderr) <- readProcessWithExitCode "make" params ""
            processResult tmp_file (code, stdout, stderr)
